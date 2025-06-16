@@ -7,6 +7,15 @@ from textual.containers import HorizontalGroup
 
 ingredients = []
 
+def find_max_ingredient_id() -> int:
+    max_id = 0
+
+    for ingredient in ingredients:
+        if int(ingredient["id"]) > max_id:
+            max_id = int(ingredient["id"])
+
+    return max_id
+
 class AddIngredientScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
@@ -37,7 +46,8 @@ class AddIngredientScreen(Screen):
         if event.button.id == "add_ingredient":
             unit_of_measure_list = self.query_one("#unit_of_measure_list")
             unit_of_measure = unit_of_measure_list.children[unit_of_measure_list.index].id[5:]
-            ingredients.append({"id": len(ingredients), "name": self.query_one("#ingredient_name").value, "unit_of_measure": unit_of_measure, "deleted": False})
+            max_id = find_max_ingredient_id()
+            ingredients.append({"id": max_id + 1, "name": self.query_one("#ingredient_name").value, "unit_of_measure": unit_of_measure, "deleted": False})
             self.app.pop_screen()
 
 class EditIngredientScreen(Screen):
@@ -64,7 +74,7 @@ class ViewIngredientScreen(Screen):
         ingredient_name = None
         ingredient_unit_of_measure = None
         for ingredient in ingredients:
-            if ingredient["id"] == self.view_ingredient_id:
+            if int(ingredient["id"]) == int(self.view_ingredient_id):
                 ingredient_name = ingredient["name"]
                 ingredient_unit_of_measure = ingredient["unit_of_measure"]
 

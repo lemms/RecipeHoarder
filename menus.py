@@ -5,6 +5,15 @@ from textual.containers import HorizontalGroup
 
 menus = []
 
+def find_max_menu_id() -> int:
+    max_id = 0
+
+    for menu in menus:
+        if int(menu["id"]) > max_id:
+            max_id = int(menu["id"])
+
+    return max_id
+
 class AddMenuScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 

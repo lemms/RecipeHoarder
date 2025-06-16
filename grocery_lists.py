@@ -5,6 +5,15 @@ from textual.containers import HorizontalGroup
 
 grocery_lists = []
 
+def find_max_grocery_list_id() -> int:
+    max_id = 0
+
+    for grocery_list in grocery_lists:
+        if int(grocery_list["id"]) > max_id:
+            max_id = int(grocery_list["id"])
+
+    return max_id
+
 class AddGroceryListScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 

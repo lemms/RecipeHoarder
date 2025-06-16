@@ -18,7 +18,7 @@ def find_max_recipe_id() -> int:
     for recipe in recipes:
         if int(recipe["id"]) > max_id:
             max_id = int(recipe["id"])
-    
+
     return max_id
 
 def search_ingredient(ingredient_name: str, match_limit: int = 10) -> list:
@@ -178,10 +178,25 @@ class ViewRecipeScreen(Screen):
 
         recipe_name = None
         for recipe in recipes:
-            if recipe["id"] == self.view_recipe_id:
+            if int(recipe["id"]) == int(self.view_recipe_id):
                 recipe_name = recipe["name"]
 
         yield Label(f"Recipe Name: {recipe_name}")
+
+        yield Label("Ingredients")
+        for recipe_ingredient_idx, recipe_ingredient in enumerate(recipe["ingredients"]):
+            ingredient_name = None
+            ingredient_unit_of_measure = None
+            ingredient_amount = recipe["amounts"][recipe_ingredient_idx]
+
+            for ingredient in ingredients.ingredients:
+                if int(ingredient["id"]) == int(recipe_ingredient):
+                    ingredient_name = ingredient["name"]
+                    ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                    break
+
+            yield Label(f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})")
+
         yield Button("Delete Recipe", id="delete_recipe")
         yield Footer()
 

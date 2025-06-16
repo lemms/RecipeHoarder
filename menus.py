@@ -7,6 +7,7 @@ from textual.screen import Screen
 from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button
 from textual.containers import HorizontalGroup
 
+import ingredients
 import recipes
 
 menus = []
@@ -150,6 +151,152 @@ class AddMenuScreen(Screen):
 
         self.refresh_list_view()
 
+class GenerateGroceryListScreen(Screen):
+    BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
+
+    grocery_list_menu_id = None
+
+    def __init__(self, grocery_list_menu_id: int) -> None:
+        self.grocery_list_menu_id = grocery_list_menu_id
+        super().__init__()
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Static("Grocery List", id="title")
+
+        grocery_list_ingredients = []
+        grocery_list_amounts = []
+
+        menu_recipes = []
+        for menu in menus:
+            if int(menu["id"]) == int(self.grocery_list_menu_id):
+                menu_recipes = menu["recipes"]
+                break
+
+        for menu_recipe in menu_recipes:
+            for recipe in recipes.recipes:
+                if int(recipe["id"]) == int(menu_recipe):
+                    for recipe_ingredient_idx, recipe_ingredient in enumerate(recipe["ingredients"]):
+                        try:
+                            ingredient_idx = grocery_list_ingredients.index(recipe_ingredient)
+                            grocery_list_amounts[ingredient_idx] += int(recipe["amounts"][recipe_ingredient_idx])
+                        except ValueError:
+                            grocery_list_ingredients.append(recipe_ingredient)
+                            grocery_list_amounts.append(int(recipe["amounts"][recipe_ingredient_idx]))
+
+        grocery_list_ingredient_names = []
+        grocery_list_ingredient_units_of_measure = []
+        grocery_list_ingredient_categories = []
+        for grocery_list_ingredient_idx, grocery_list_ingredient_id in enumerate(grocery_list_ingredients):
+            for ingredient in ingredients.ingredients:
+                if int(ingredient["id"]) == int(grocery_list_ingredient_id):
+                    grocery_list_ingredient_names.append(ingredient["name"])
+                    grocery_list_ingredient_units_of_measure.append(ingredient["unit_of_measure"])
+                    grocery_list_ingredient_categories.append(ingredient["category"])
+                    break
+
+        produce_ingredients = []
+        dairy_ingredients = []
+        meat_ingredients = []
+        seafood_ingredients = []
+        bakery_ingredients = []
+        frozen_ingredients = []
+        pantry_ingredients = []
+        other_ingredients = []
+
+        for grocery_list_ingredient_idx, grocery_list_ingredient_id in enumerate(grocery_list_ingredients):
+            ingredient_category = None
+
+            for ingredient in ingredients.ingredients:
+                if int(ingredient["id"]) == int(grocery_list_ingredient_id):
+                    ingredient_category = ingredient["category"]
+                    break
+
+            if ingredient_category == "produce":
+                produce_ingredients.append(grocery_list_ingredient_idx)
+            elif ingredient_category == "dairy":
+                dairy_ingredients.append(grocery_list_ingredient_idx)
+            elif ingredient_category == "meat":
+                meat_ingredients.append(grocery_list_ingredient_idx)
+            elif ingredient_category == "seafood":
+                seafood_ingredients.append(grocery_list_ingredient_idx)
+            elif ingredient_category == "bakery":
+                bakery_ingredients.append(grocery_list_ingredient_idx)
+            elif ingredient_category == "frozen":
+                frozen_ingredients.append(grocery_list_ingredient_idx)
+            elif ingredient_category == "pantry":
+                pantry_ingredients.append(grocery_list_ingredient_idx)
+            elif ingredient_category == "other":
+                other_ingredients.append(grocery_list_ingredient_idx)
+            else:
+                raise Exception(f'Invalid ingredient category: {ingredient_category}')
+
+        if len(produce_ingredients) > 0:
+            yield Label("Produce")
+            for produce_ingredient_idx, produce_ingredient in enumerate(produce_ingredients):
+                produce_ingredient_name = grocery_list_ingredient_names[produce_ingredient]
+                produce_ingredient_amount = grocery_list_amounts[produce_ingredient]
+                produce_ingredient_unit_of_measure = grocery_list_ingredient_units_of_measure[produce_ingredient]
+                yield Label(f"{produce_ingredient_name} ({produce_ingredient_amount} {produce_ingredient_unit_of_measure})")
+
+        if len(dairy_ingredients) > 0:
+            yield Label("Dairy")
+            for dairy_ingredient_idx, dairy_ingredient in enumerate(dairy_ingredients):
+                dairy_ingredient_name = grocery_list_ingredient_names[dairy_ingredient]
+                dairy_ingredient_amount = grocery_list_amounts[dairy_ingredient]
+                dairy_ingredient_unit_of_measure = grocery_list_ingredient_units_of_measure[dairy_ingredient]
+                yield Label(f"{dairy_ingredient_name} ({dairy_ingredient_amount} {dairy_ingredient_unit_of_measure})")
+
+        if len(meat_ingredients) > 0:
+            yield Label("Meat")
+            for meat_ingredient_idx, meat_ingredient in enumerate(meat_ingredients):
+                meat_ingredient_name = grocery_list_ingredient_names[meat_ingredient]
+                meat_ingredient_amount = grocery_list_amounts[meat_ingredient]
+                meat_ingredient_unit_of_measure = grocery_list_ingredient_units_of_measure[meat_ingredient]
+                yield Label(f"{meat_ingredient_name} ({meat_ingredient_amount} {meat_ingredient_unit_of_measure})")
+
+        if len(seafood_ingredients) > 0:
+            yield Label("Seafood")
+            for seafood_ingredient_idx, seafood_ingredient in enumerate(seafood_ingredients):
+                seafood_ingredient_name = grocery_list_ingredient_names[seafood_ingredient]
+                seafood_ingredient_amount = grocery_list_amounts[seafood_ingredient]
+                seafood_ingredient_unit_of_measure = grocery_list_ingredient_units_of_measure[seafood_ingredient]
+                yield Label(f"{seafood_ingredient_name} ({seafood_ingredient_amount} {seafood_ingredient_unit_of_measure})")
+
+        if len(bakery_ingredients) > 0:
+            yield Label("Bakery")
+            for bakery_ingredient_idx, bakery_ingredient in enumerate(bakery_ingredients):
+                bakery_ingredient_name = grocery_list_ingredient_names[bakery_ingredient]
+                bakery_ingredient_amount = grocery_list_amounts[bakery_ingredient]
+                bakery_ingredient_unit_of_measure = grocery_list_ingredient_units_of_measure[bakery_ingredient]
+                yield Label(f"{bakery_ingredient_name} ({bakery_ingredient_amount} {bakery_ingredient_unit_of_measure})")
+
+        if len(frozen_ingredients) > 0:
+            yield Label("Frozen")
+            for frozen_ingredient_idx, frozen_ingredient in enumerate(frozen_ingredients):
+                frozen_ingredient_name = grocery_list_ingredient_names[frozen_ingredient]
+                frozen_ingredient_amount = grocery_list_amounts[frozen_ingredient]
+                frozen_ingredient_unit_of_measure = grocery_list_ingredient_units_of_measure[frozen_ingredient]
+                yield Label(f"{frozen_ingredient_name} ({frozen_ingredient_amount} {frozen_ingredient_unit_of_measure})")
+
+        if len(pantry_ingredients) > 0:
+            yield Label("Pantry")
+            for pantry_ingredient_idx, pantry_ingredient in enumerate(pantry_ingredients):
+                pantry_ingredient_name = grocery_list_ingredient_names[pantry_ingredient]
+                pantry_ingredient_amount = grocery_list_amounts[pantry_ingredient]
+                pantry_ingredient_unit_of_measure = grocery_list_ingredient_units_of_measure[pantry_ingredient]
+                yield Label(f"{pantry_ingredient_name} ({pantry_ingredient_amount} {pantry_ingredient_unit_of_measure})")
+
+        if len(other_ingredients) > 0:
+            yield Label("Other")
+            for other_ingredient_idx, other_ingredient in enumerate(other_ingredients):
+                other_ingredient_name = grocery_list_ingredient_names[other_ingredient]
+                other_ingredient_amount = grocery_list_amounts[other_ingredient]
+                other_ingredient_unit_of_measure = grocery_list_ingredient_units_of_measure[other_ingredient]
+                yield Label(f"{other_ingredient_name} ({other_ingredient_amount} {other_ingredient_unit_of_measure})")
+
+        yield Footer()
+
 class ViewMenuScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
@@ -182,6 +329,8 @@ class ViewMenuScreen(Screen):
                     break
             yield Label(f"{recipe_name}")
 
+        yield Button("Generate Grocery List", id="generate_grocery_list")
+
         yield Button("Delete Menu", id="delete_menu")
         yield Footer()
 
@@ -192,6 +341,9 @@ class ViewMenuScreen(Screen):
                     menu["deleted"] = True
             self.view_menu_id = None
             self.dismiss(None)
+        elif event.button.id == "generate_grocery_list":
+            grocery_list_menu_id = self.view_menu_id
+            self.app.push_screen(GenerateGroceryListScreen(grocery_list_menu_id))
 
 class ListMenusScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]

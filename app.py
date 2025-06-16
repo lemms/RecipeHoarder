@@ -26,7 +26,8 @@ class RecipeApp(App):
                "add_menu": menus.AddMenuScreen,
                "list_menus": menus.ListMenusScreen,
                "recipe_ingredient_search": recipes.RecipeIngredientSearchScreen,
-               "menu_recipe_search": menus.MenuRecipeSearchScreen}
+               "menu_recipe_search": menus.MenuRecipeSearchScreen,
+               "generate_grocery_list": menus.GenerateGroceryListScreen}
 
     def compose(self) -> ComposeResult:
         yield Header()

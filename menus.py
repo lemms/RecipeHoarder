@@ -17,20 +17,29 @@ def find_max_menu_id() -> int:
 class AddMenuScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
+    menu_recipes = []
+
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static("Add Menu", id="title")
         yield Input(placeholder="Menu Name", id="menu_name", type="text")
+        yield Button("Add Recipe", id="add_recipe")
+        yield Label("Recipes")
+        yield ListView()
         yield Button("Submit", id="add_menu")
         yield Footer()
 
-class EditMenuScreen(Screen):
-    BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
-
-    def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("Edit Menu", id="title")
-        yield Footer()
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "add_recipe":
+            self.app.push_screen("add_recipe")
+        elif event.button.id == "add_menu":
+            menu_name = self.query_one("#menu_name").value
+            if menu_name is None or menu_name == "":
+                self.app.pop_screen()
+            else:
+                max_id = find_max_menu_id()
+                menus.append({"id": max_id + 1, "name": menu_name, "deleted": False, "recipes": self.menu_recipes})
+                self.app.pop_screen()
 
 class ViewMenuScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]

@@ -4,7 +4,7 @@ from textual import on
 from textual.app import ComposeResult
 from textual.events import ScreenResume
 from textual.screen import Screen
-from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button, Digits, TextArea
+from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button, TextArea
 from textual.containers import HorizontalGroup
 from textual.css.query import NoMatches
 
@@ -82,19 +82,6 @@ class RecipeIngredientSearchScreen(Screen):
                 ingredient_amount = self.query_one("#ingredient_amount").value
                 self.dismiss((ingredient_id, ingredient_amount))
 
-class IngredientAmount(HorizontalGroup):
-    ingredient_name = ""
-    ingredient_amount = 0
-
-    def __init__(self, ingredient_name: str, ingredient_amount: int, id: str) -> None:
-        super().__init__(id=id)
-        self.ingredient_name = ingredient_name
-        self.ingredient_amount = ingredient_amount
-
-    def compose(self) -> ComposeResult:
-        yield Label(f'{self.ingredient_name}')
-        yield Digits(f'{self.ingredient_amount}')
-
 class AddRecipeScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
@@ -128,16 +115,13 @@ class AddRecipeScreen(Screen):
 
                         for ingredient_idx, recipe_ingredient in enumerate(self.recipe_ingredients):
                             ingredient_name = None
+                            ingredient_unit_of_measure = None
                             for ingredient in ingredients.ingredients:
-                                if ingredient["id"] == recipe_ingredient:
+                                if int(ingredient["id"]) == int(recipe_ingredient):
                                     ingredient_name = ingredient["name"]
-                            ingredient_id = recipe_ingredient
+                                    ingredient_unit_of_measure = ingredient["unit_of_measure"]
                             ingredient_amount = self.recipe_amounts[ingredient_idx]
-                            list_view.append(ListItem(IngredientAmount(ingredient_name,
-                                                                       ingredient_amount,
-                                                                       id=f'ingredient_amount_{ingredient_idx}'),
-                                                      id=f'ingredient_{ingredient_idx}'))
-                        list_view.refresh()
+                            list_view.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})'), id=f'ingredient_{ingredient_idx}'))
 
             self.app.push_screen("recipe_ingredient_search", add_recipe_ingredient)
         elif event.button.id == "add_recipe":
@@ -149,21 +133,21 @@ class AddRecipeScreen(Screen):
                 recipes.append({"id": max_id + 1, "name": recipe_name, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False, "instructions": self.query_one("#recipe_instructions").text})
                 self.app.pop_screen()
 
-    def on_list_view_selected(self, event: ListView.Selected) -> None:
-        for ingredient in self.recipe_ingredients:
-            ingredient_id = ingredients[ingredient]["id"]
-            if event.item.id == f'ingredient_{ingredient_id}':
-                self.recipe_ingredients.remove(ingredient)
-                break
+    async def on_list_view_selected(self, event: ListView.Selected) -> None:
+        del self.recipe_ingredients[int(event.item.id[11:])]
+        del self.recipe_amounts[int(event.item.id[11:])]
+        list_view = self.query_one("ListView")
+        await list_view.clear()
 
-class EditRecipeScreen(Screen):
-    BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
-
-    def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("Edit Recipe", id="title")
-        yield Footer()
-
+        for ingredient_idx, recipe_ingredient in enumerate(self.recipe_ingredients):
+            ingredient_name = None
+            ingredient_unit_of_measure = None
+            for ingredient in ingredients.ingredients:
+                if int(ingredient["id"]) == int(recipe_ingredient):
+                    ingredient_name = ingredient["name"]
+                    ingredient_unit_of_measure = ingredient["unit_of_measure"]
+            ingredient_amount = self.recipe_amounts[ingredient_idx]
+            list_view.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount})'), id=f'ingredient_{ingredient_idx}'))
 
 class ViewRecipeScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]

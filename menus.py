@@ -92,23 +92,37 @@ class AddMenuScreen(Screen):
 
     menu_recipes = []
     menu_name_input = None
+    menu_total_servings_label = None
     menu_recipe_list = None
+    menu_servings = 0
 
     async def clear_menu_form(self) -> None:
         self.menu_recipes = []
         self.menu_name_input.value = ""
+        self.menu_servings = 0
         await self.menu_recipe_list.clear()
 
     async def refresh_list_view(self) -> None:
         await self.menu_recipe_list.clear()
 
+        self.menu_servings = 0
+
         for menu_recipe_idx, menu_recipe in enumerate(self.menu_recipes):
             menu_recipe_name = None
+            menu_recipe_servings = 0
             for recipe in recipes.recipes:
                 if int(recipe["id"]) == int(menu_recipe):
                     menu_recipe_name = recipe["name"]
+                    menu_recipe_servings = int(recipe["servings"])
 
-            self.menu_recipe_list.append(ListItem(Label(f'{menu_recipe_name}'), id=f'menu_recipe_{menu_recipe_idx}'))
+                    self.menu_servings += menu_recipe_servings
+
+            self.menu_recipe_list.append(ListItem(Label(f'{menu_recipe_name} ({menu_recipe_servings} servings)'), id=f'menu_recipe_{menu_recipe_idx}'))
+
+        menu_servings_label = f"Total Servings: {self.menu_servings}"
+        self.menu_total_servings_label.label = menu_servings_label
+        self.menu_total_servings_label.update(menu_servings_label)
+        self.menu_total_servings_label.refresh()
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -119,6 +133,8 @@ class AddMenuScreen(Screen):
         yield Label("Recipes")
         self.menu_recipe_list = ListView()
         yield self.menu_recipe_list
+        self.menu_total_servings_label = Label(f"Total Servings: {self.menu_servings}")
+        yield self.menu_total_servings_label
         yield Button("Submit", id="add_menu")
         yield Footer()
 
@@ -149,7 +165,7 @@ class AddMenuScreen(Screen):
     async def on_list_view_selected(self, event: ListView.Selected) -> None:
         del self.menu_recipes[int(event.item.id[12:])]
 
-        self.refresh_list_view()
+        await self.refresh_list_view()
 
 class GenerateGroceryListScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
@@ -301,6 +317,7 @@ class ViewMenuScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
     view_menu_id = None
+    menu_total_servings_label = None
 
     def __init__(self, view_menu_id: int) -> None:
         self.view_menu_id = view_menu_id
@@ -321,13 +338,19 @@ class ViewMenuScreen(Screen):
         yield Label(f"Menu Name: {menu_name}")
 
         yield Label("Recipes")
+        menu_total_servings = 0
         for menu_recipe_idx, menu_recipe in enumerate(menu_recipes):
             recipe_name = None
             for recipe in recipes.recipes:
                 if int(recipe["id"]) == int(menu_recipe):
                     recipe_name = recipe["name"]
+                    menu_total_servings += int(recipe["servings"])
                     break
             yield Label(f"{recipe_name}")
+
+        menu_total_servings_label = f"Total Servings: {menu_total_servings}"
+        self.menu_total_servings_label = Label(menu_total_servings_label)
+        yield self.menu_total_servings_label
 
         yield Button("Generate Grocery List", id="generate_grocery_list")
 

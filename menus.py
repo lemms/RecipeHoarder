@@ -54,7 +54,18 @@ class MenuRecipeSearchScreen(Screen):
         await self.list_view.clear()
 
         for name_match_idx, name_match in enumerate(self.name_matches):
-            self.list_view.append(ListItem(Label(name_match), id=f'search_recipe_{name_match_idx}'))
+            recipe_time = None
+            recipe_servings = None
+            recipe_stars = None
+
+            for recipe in recipes.recipes:
+                if int(recipe["id"]) == int(self.id_matches[name_match_idx]):
+                    recipe_time = recipe["time"]
+                    recipe_servings = recipe["servings"]
+                    recipe_stars = recipe["stars"]
+                    break
+
+            self.list_view.append(ListItem(Label(f'{name_match} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars'), id=f'search_recipe_{name_match_idx}'))
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -109,15 +120,19 @@ class AddMenuScreen(Screen):
 
         for menu_recipe_idx, menu_recipe in enumerate(self.menu_recipes):
             menu_recipe_name = None
-            menu_recipe_servings = 0
+            menu_recipe_time = None
+            menu_recipe_servings = None
+            menu_recipe_stars = None
             for recipe in recipes.recipes:
                 if int(recipe["id"]) == int(menu_recipe):
                     menu_recipe_name = recipe["name"]
+                    menu_recipe_time = recipe["time"]
                     menu_recipe_servings = int(recipe["servings"])
+                    menu_recipe_stars = recipe["stars"]
 
                     self.menu_servings += menu_recipe_servings
 
-            self.menu_recipe_list.append(ListItem(Label(f'{menu_recipe_name} ({menu_recipe_servings} servings)'), id=f'menu_recipe_{menu_recipe_idx}'))
+            self.menu_recipe_list.append(ListItem(Label(f'{menu_recipe_name} ({menu_recipe_servings} servings) ({menu_recipe_time}) {menu_recipe_stars} stars'), id=f'menu_recipe_{menu_recipe_idx}'))
 
         menu_servings_label = f"Total Servings: {self.menu_servings}"
         self.menu_total_servings_label.label = menu_servings_label
@@ -341,12 +356,18 @@ class ViewMenuScreen(Screen):
         menu_total_servings = 0
         for menu_recipe_idx, menu_recipe in enumerate(menu_recipes):
             recipe_name = None
+            recipe_servings = None
+            recipe_time = None
+            recipe_stars = None
             for recipe in recipes.recipes:
                 if int(recipe["id"]) == int(menu_recipe):
                     recipe_name = recipe["name"]
-                    menu_total_servings += int(recipe["servings"])
+                    recipe_servings = int(recipe["servings"])
+                    recipe_time = recipe["time"]
+                    recipe_stars = recipe["stars"]
+                    menu_total_servings += recipe_servings
                     break
-            yield Label(f"{recipe_name}")
+            yield Label(f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars")
 
         menu_total_servings_label = f"Total Servings: {menu_total_servings}"
         self.menu_total_servings_label = Label(menu_total_servings_label)

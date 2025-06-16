@@ -162,7 +162,7 @@ class AddRecipeScreen(Screen):
                 self.app.pop_screen()
             else:
                 max_id = find_max_recipe_id()
-                recipes.append({"id": max_id + 1, "name": recipe_name, "servings": self.query_one("#recipe_servings").value, "time": self.query_one("#recipe_time").value, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False, "instructions": self.query_one("#recipe_instructions").text})
+                recipes.append({"id": max_id + 1, "name": recipe_name, "servings": self.query_one("#recipe_servings").value, "time": self.query_one("#recipe_time").value, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False, "instructions": self.query_one("#recipe_instructions").text, "stars": 5, "tags": []})
                 await self.clear_recipe()
                 self.app.pop_screen()
 
@@ -218,6 +218,13 @@ class ViewRecipeScreen(Screen):
         yield Label("Instructions")
         yield Label(recipe_instructions)
 
+        if len(recipe["tags"]) > 0:
+            yield Label("Tags")
+            for tag in recipe["tags"]:
+                yield Label(tag)
+
+        yield Label(f'Star Rating: {recipe["stars"]}')
+
         yield Button("Delete Recipe", id="delete_recipe")
         yield Footer()
 
@@ -241,7 +248,7 @@ class ListRecipesScreen(Screen):
 
         for recipe_idx, recipe in enumerate(recipes):
             if not recipe["deleted"]:
-                self.list_view.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]})'), id=f'recipe_{recipe_idx}'))
+                self.list_view.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]}) {recipe["stars"]} stars'), id=f'recipe_{recipe_idx}'))
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -249,7 +256,7 @@ class ListRecipesScreen(Screen):
         list_items = []
         for recipe_idx, recipe in enumerate(recipes):
             if not recipe["deleted"]:
-                list_items.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]})'), id=f'recipe_{recipe_idx}'))
+                list_items.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]}) {recipe["stars"]} stars'), id=f'recipe_{recipe_idx}'))
         self.list_view = ListView(*list_items, id="list_recipes")
         yield self.list_view
         yield Footer()

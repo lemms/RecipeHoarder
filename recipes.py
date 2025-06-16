@@ -4,7 +4,7 @@ from textual import on
 from textual.app import ComposeResult
 from textual.events import ScreenResume
 from textual.screen import Screen
-from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button, Digits
+from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button, Digits, TextArea
 from textual.containers import HorizontalGroup
 from textual.css.query import NoMatches
 
@@ -107,6 +107,8 @@ class AddRecipeScreen(Screen):
         yield Input(placeholder="Recipe Name", id="recipe_name", type="text")
         yield Button("Add Ingredient", id="add_ingredient")
         yield ListView()
+        yield Label("Instructions")
+        yield TextArea(id="recipe_instructions")
         yield Button("Submit", id="add_recipe")
         yield Footer()
 
@@ -144,7 +146,7 @@ class AddRecipeScreen(Screen):
                 self.app.pop_screen()
             else:
                 max_id = find_max_recipe_id()
-                recipes.append({"id": max_id + 1, "name": recipe_name, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False})
+                recipes.append({"id": max_id + 1, "name": recipe_name, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False, "instructions": self.query_one("#recipe_instructions").text})
                 self.app.pop_screen()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
@@ -177,9 +179,12 @@ class ViewRecipeScreen(Screen):
         yield Static("View Recipe", id="title")
 
         recipe_name = None
+        recipe_instructions = None
         for recipe in recipes:
             if int(recipe["id"]) == int(self.view_recipe_id):
                 recipe_name = recipe["name"]
+                recipe_instructions = recipe["instructions"]
+                break
 
         yield Label(f"Recipe Name: {recipe_name}")
 
@@ -196,6 +201,9 @@ class ViewRecipeScreen(Screen):
                     break
 
             yield Label(f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})")
+
+        yield Label("Instructions")
+        yield Label(recipe_instructions)
 
         yield Button("Delete Recipe", id="delete_recipe")
         yield Footer()

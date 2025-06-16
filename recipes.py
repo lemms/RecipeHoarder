@@ -101,6 +101,7 @@ class AddRecipeScreen(Screen):
     recipe_stars_input = None
     recipe_instructions_text_area = None
     list_view = None
+    recipe_tags_text_area = None
 
     async def clear_recipe(self) -> None:
         self.recipe_ingredients.clear()
@@ -111,6 +112,7 @@ class AddRecipeScreen(Screen):
         self.recipe_time_input.value = ""
         self.recipe_stars_input.value = "5"
         self.recipe_instructions_text_area.text = ""
+        self.recipe_tags_text_area.text = ""
 
     async def refresh_list_view(self) -> None:
         await self.list_view.clear()
@@ -148,6 +150,9 @@ class AddRecipeScreen(Screen):
         yield Label("Star Rating")
         self.recipe_stars_input = Input(placeholder="Star Rating", id="recipe_stars", type="number", value="5")
         yield self.recipe_stars_input
+        yield Label("Tags")
+        self.recipe_tags_text_area = TextArea(id="recipe_tags")
+        yield self.recipe_tags_text_area
         yield Button("Submit", id="add_recipe")
         yield Footer()
 
@@ -171,7 +176,11 @@ class AddRecipeScreen(Screen):
                 self.app.pop_screen()
             else:
                 max_id = find_max_recipe_id()
-                recipes.append({"id": max_id + 1, "name": recipe_name, "servings": self.recipe_servings_input.value, "time": self.recipe_time_input.value, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False, "instructions": self.recipe_instructions_text_area.text, "stars": self.recipe_stars_input.value, "tags": []})
+                if self.recipe_tags_text_area.text is not None and self.recipe_tags_text_area.text != "":
+                    recipe_tags = self.recipe_tags_text_area.text.split("\n")
+                else:
+                    recipe_tags = []
+                recipes.append({"id": max_id + 1, "name": recipe_name, "servings": self.recipe_servings_input.value, "time": self.recipe_time_input.value, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False, "instructions": self.recipe_instructions_text_area.text, "stars": self.recipe_stars_input.value, "tags": recipe_tags})
                 await self.clear_recipe()
                 self.app.pop_screen()
 

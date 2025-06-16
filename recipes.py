@@ -127,6 +127,12 @@ class AddRecipeScreen(Screen):
         yield Static("Add Recipe", id="title")
         self.recipe_name_input = Input(placeholder="Recipe Name", id="recipe_name", type="text")
         yield self.recipe_name_input
+        yield Label("Servings")
+        self.recipe_servings_input = Input(placeholder="Servings", id="recipe_servings", type="number", value="1")
+        yield self.recipe_servings_input
+        yield Label("Time")
+        self.recipe_time_input = Input(placeholder="Time", id="recipe_time", type="text")
+        yield self.recipe_time_input
         yield Button("Add Ingredient", id="add_ingredient")
         self.list_view = ListView()
         yield self.list_view
@@ -156,7 +162,7 @@ class AddRecipeScreen(Screen):
                 self.app.pop_screen()
             else:
                 max_id = find_max_recipe_id()
-                recipes.append({"id": max_id + 1, "name": recipe_name, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False, "instructions": self.query_one("#recipe_instructions").text})
+                recipes.append({"id": max_id + 1, "name": recipe_name, "servings": self.query_one("#recipe_servings").value, "time": self.query_one("#recipe_time").value, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False, "instructions": self.query_one("#recipe_instructions").text})
                 await self.clear_recipe()
                 self.app.pop_screen()
 
@@ -181,13 +187,19 @@ class ViewRecipeScreen(Screen):
 
         recipe_name = None
         recipe_instructions = None
+        recipe_time = None
+        recipe_servings = None
         for recipe in recipes:
             if int(recipe["id"]) == int(self.view_recipe_id):
                 recipe_name = recipe["name"]
                 recipe_instructions = recipe["instructions"]
+                recipe_time = recipe["time"]
+                recipe_servings = recipe["servings"]
                 break
 
         yield Label(f"Recipe Name: {recipe_name}")
+        yield Label(f"Time: {recipe_time}")
+        yield Label(f"Servings: {recipe_servings}")
 
         yield Label("Ingredients")
         for recipe_ingredient_idx, recipe_ingredient in enumerate(recipe["ingredients"]):
@@ -229,7 +241,7 @@ class ListRecipesScreen(Screen):
 
         for recipe_idx, recipe in enumerate(recipes):
             if not recipe["deleted"]:
-                self.list_view.append(ListItem(Label(recipe["name"]), id=f'recipe_{recipe_idx}'))
+                self.list_view.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]})'), id=f'recipe_{recipe_idx}'))
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -237,7 +249,7 @@ class ListRecipesScreen(Screen):
         list_items = []
         for recipe_idx, recipe in enumerate(recipes):
             if not recipe["deleted"]:
-                list_items.append(ListItem(Label(recipe["name"]), id=f'recipe_{recipe_idx}'))
+                list_items.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]})'), id=f'recipe_{recipe_idx}'))
         self.list_view = ListView(*list_items, id="list_recipes")
         yield self.list_view
         yield Footer()

@@ -68,6 +68,7 @@ class RecipeApp(App):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("data", type=str, help="Data directory")
+    parser.add_argument("--debug", action="store_true", help="Debug mode")
     args = parser.parse_args()
 
     data_path = args.data
@@ -89,10 +90,10 @@ if __name__ == "__main__":
     with open(data_path + "/menus_backup.json", "w") as f:
         json.dump(menus.menus, f)
 
-    # TODO: Remove this
-    print(recipes.recipes)
-    print(ingredients.ingredients)
-    print(menus.menus)
+    if args.debug:
+        print(recipes.recipes)
+        print(ingredients.ingredients)
+        print(menus.menus)
 
     app = RecipeApp()
     app.run()

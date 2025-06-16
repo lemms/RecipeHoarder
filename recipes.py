@@ -21,7 +21,7 @@ def find_max_recipe_id() -> int:
 
     return max_id
 
-def search_ingredient(ingredient_name: str, match_limit: int = 10) -> list:
+def search_ingredient(ingredient_name: str, match_limit: int = 50) -> list:
     ingredient_names = [ingredient["name"] for ingredient in ingredients.ingredients]
     string_matches = process.extract(ingredient_name, ingredient_names, limit=match_limit)
 
@@ -44,10 +44,11 @@ class RecipeIngredientSearchScreen(Screen):
     ingredient_name_input = None
     list_view = None
     ingredient_amount_input = None
+    amount_label = None
 
     async def clear_ingredient_search(self) -> None:
-        self.name_matches.clear()
-        self.id_matches.clear()
+        self.name_matches = []
+        self.id_matches = []
         self.ingredient_name_input.value = ""
         await self.list_view.clear()
         self.ingredient_amount_input.value = "0"
@@ -67,14 +68,16 @@ class RecipeIngredientSearchScreen(Screen):
         yield Label("Select Ingredient")
         self.list_view = ListView()
         yield self.list_view
+        self.amount_label = Label("Amount")
+        yield self.amount_label
         self.ingredient_amount_input = Input(placeholder="Ingredient Amount", id="ingredient_amount", type="number", value="0")
         yield self.ingredient_amount_input
         yield Button("Add Ingredient", id="add_ingredient")
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "search_ingredient":
-            self.name_matches.clear()
-            self.id_matches.clear()
+            self.name_matches = []
+            self.id_matches = []
 
             self.name_matches, self.id_matches = search_ingredient(self.query_one("#ingredient_name").value)
 
@@ -104,8 +107,8 @@ class AddRecipeScreen(Screen):
     recipe_tags_text_area = None
 
     async def clear_recipe(self) -> None:
-        self.recipe_ingredients.clear()
-        self.recipe_amounts.clear()
+        self.recipe_ingredients = []
+        self.recipe_amounts = []
         self.recipe_name_input.value = ""
         await self.list_view.clear()
         self.recipe_servings_input.value = "1"
@@ -128,7 +131,7 @@ class AddRecipeScreen(Screen):
 
             ingredient_amount = self.recipe_amounts[ingredient_idx]
 
-            self.list_view.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount})'), id=f'ingredient_{ingredient_idx}'))
+            self.list_view.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})'), id=f'ingredient_{ingredient_idx}'))
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -180,7 +183,20 @@ class AddRecipeScreen(Screen):
                     recipe_tags = self.recipe_tags_text_area.text.split("\n")
                 else:
                     recipe_tags = []
-                recipes.append({"id": max_id + 1, "name": recipe_name, "servings": self.recipe_servings_input.value, "time": self.recipe_time_input.value, "ingredients": self.recipe_ingredients, "amounts": self.recipe_amounts, "deleted": False, "instructions": self.recipe_instructions_text_area.text, "stars": self.recipe_stars_input.value, "tags": recipe_tags})
+
+                recipe = {"id": max_id + 1,
+                          "name": recipe_name,
+                          "servings": self.recipe_servings_input.value,
+                          "time": self.recipe_time_input.value,
+                          "ingredients": self.recipe_ingredients,
+                          "amounts": self.recipe_amounts,
+                          "deleted": False,
+                          "instructions": self.recipe_instructions_text_area.text,
+                          "stars": self.recipe_stars_input.value,
+                          "tags": recipe_tags}
+
+                recipes.append(recipe)
+
                 await self.clear_recipe()
                 self.app.pop_screen()
 
@@ -207,12 +223,16 @@ class ViewRecipeScreen(Screen):
         recipe_instructions = None
         recipe_time = None
         recipe_servings = None
+        recipe_ingredients = None
+        recipe_amounts = None
         for recipe in recipes:
             if int(recipe["id"]) == int(self.view_recipe_id):
                 recipe_name = recipe["name"]
                 recipe_instructions = recipe["instructions"]
                 recipe_time = recipe["time"]
                 recipe_servings = recipe["servings"]
+                recipe_ingredients = recipe["ingredients"]
+                recipe_amounts = recipe["amounts"]
                 break
 
         yield Label(f"Recipe Name: {recipe_name}")
@@ -220,10 +240,10 @@ class ViewRecipeScreen(Screen):
         yield Label(f"Servings: {recipe_servings}")
 
         yield Label("Ingredients")
-        for recipe_ingredient_idx, recipe_ingredient in enumerate(recipe["ingredients"]):
+        for recipe_ingredient_idx, recipe_ingredient in enumerate(recipe_ingredients):
             ingredient_name = None
             ingredient_unit_of_measure = None
-            ingredient_amount = recipe["amounts"][recipe_ingredient_idx]
+            ingredient_amount = recipe_amounts[recipe_ingredient_idx]
 
             for ingredient in ingredients.ingredients:
                 if int(ingredient["id"]) == int(recipe_ingredient):

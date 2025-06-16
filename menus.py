@@ -21,7 +21,7 @@ def find_max_menu_id() -> int:
 
     return max_id
 
-def search_recipe(recipe_name: str, match_limit: int = 10) -> list:
+def search_recipe(recipe_name: str, match_limit: int = 50) -> list:
     recipe_names = [recipe["name"] for recipe in recipes.recipes]
     string_matches = process.extract(recipe_name, recipe_names, limit=match_limit)
 
@@ -45,8 +45,8 @@ class MenuRecipeSearchScreen(Screen):
     list_view = None
 
     async def clear_menu_recipe_search(self) -> None:
-        self.name_matches.clear()
-        self.id_matches.clear()
+        self.name_matches = []
+        self.id_matches = []
         self.recipe_name_input.value = ""
         await self.list_view.clear()
 
@@ -80,8 +80,8 @@ class MenuRecipeSearchScreen(Screen):
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "search_recipe":
-            self.name_matches.clear()
-            self.id_matches.clear()
+            self.name_matches = []
+            self.id_matches = []
 
             self.name_matches, self.id_matches = search_recipe(self.query_one("#recipe_name").value)
 

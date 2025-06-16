@@ -50,14 +50,6 @@ class AddIngredientScreen(Screen):
             ingredients.append({"id": max_id + 1, "name": self.query_one("#ingredient_name").value, "unit_of_measure": unit_of_measure, "deleted": False})
             self.app.pop_screen()
 
-class EditIngredientScreen(Screen):
-    BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
-
-    def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("Edit Ingredient", id="title")
-        yield Footer()
-
 class ViewIngredientScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
@@ -100,9 +92,9 @@ class ListIngredientsScreen(Screen):
         yield Header()
         yield Static("List Ingredients", id="title")
         list_items = []
-        for ingredient in ingredients:
+        for ingredient_idx, ingredient in enumerate(ingredients):
             if not ingredient["deleted"]:
-                list_items.append(ListItem(Label(ingredient["name"]), id=f'ingredient_{ingredient["id"]}'))
+                list_items.append(ListItem(Label(ingredient["name"]), id=f'ingredient_{ingredient_idx}'))
         self.list_view = ListView(*list_items)
         yield self.list_view
         yield Footer()
@@ -116,9 +108,9 @@ class ListIngredientsScreen(Screen):
     async def handle_list_ingredients_screen_resumed(self) -> None:
         await self.list_view.clear()
 
-        for ingredient in ingredients:
+        for ingredient_idx, ingredient in enumerate(ingredients):
             if not ingredient["deleted"]:
-                self.list_view.append(ListItem(Label(ingredient["name"]), id=f'ingredient_{ingredient["id"]}'))
+                self.list_view.append(ListItem(Label(ingredient["name"]), id=f'ingredient_{ingredient_idx}'))
 
 class IngredientsScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]

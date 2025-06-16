@@ -101,13 +101,16 @@ class ViewIngredientScreen(Screen):
 
         ingredient_name = None
         ingredient_unit_of_measure = None
+        ingredient_category = None
         for ingredient in ingredients:
             if int(ingredient["id"]) == int(self.view_ingredient_id):
                 ingredient_name = ingredient["name"]
                 ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                ingredient_category = ingredient["category"]
 
         yield Label(f"Ingredient Name: {ingredient_name}")
         yield Label(f"Unit of Measure: {ingredient_unit_of_measure}")
+        yield Label(f"Category: {ingredient_category}")
         yield Button("Delete Ingredient", id="delete_ingredient")
         yield Footer()
 

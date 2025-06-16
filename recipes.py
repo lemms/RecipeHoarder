@@ -57,7 +57,15 @@ class RecipeIngredientSearchScreen(Screen):
         await self.list_view.clear()
 
         for name_match_idx, name_match in enumerate(self.name_matches):
-            self.list_view.append(ListItem(Label(name_match), id=f'search_ingredient_{name_match_idx}'))
+            id_match = self.id_matches[name_match_idx]
+            ingredient_unit_of_measure = None
+            ingredient_category = None
+            for ingredient in ingredients.ingredients:
+                if int(ingredient["id"]) == int(id_match):
+                    ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                    ingredient_category = ingredient["category"]
+
+            self.list_view.append(ListItem(Label(f'{name_match} ({ingredient_unit_of_measure}) ({ingredient_category})'), id=f'search_ingredient_{name_match_idx}'))
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -87,7 +95,7 @@ class RecipeIngredientSearchScreen(Screen):
                 self.dismiss(None)
             else:
                 ingredient_id = self.id_matches[self.list_view.index]
-                ingredient_amount = self.query_one("#ingredient_amount").value
+                ingredient_amount = float(self.query_one("#ingredient_amount").value)
 
                 await self.clear_ingredient_search()
 
@@ -131,7 +139,7 @@ class AddRecipeScreen(Screen):
                     ingredient_name = ingredient["name"]
                     ingredient_unit_of_measure = ingredient["unit_of_measure"]
 
-            ingredient_amount = self.recipe_amounts[ingredient_idx]
+            ingredient_amount = float(self.recipe_amounts[ingredient_idx])
 
             self.list_view.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})'), id=f'ingredient_{ingredient_idx}'))
 
@@ -172,7 +180,7 @@ class AddRecipeScreen(Screen):
 
                     if ingredient_id is not None:
                         self.recipe_ingredients.append(ingredient_id)
-                        self.recipe_amounts.append(ingredient_amount)
+                        self.recipe_amounts.append(float(ingredient_amount))
 
                     if len(self.recipe_ingredients) > 0:
                         await self.refresh_list_view()
@@ -255,7 +263,7 @@ class ViewRecipeScreen(Screen):
         for recipe_ingredient_idx, recipe_ingredient in enumerate(recipe_ingredients):
             ingredient_name = None
             ingredient_unit_of_measure = None
-            ingredient_amount = recipe_amounts[recipe_ingredient_idx]
+            ingredient_amount = float(recipe_amounts[recipe_ingredient_idx])
 
             for ingredient in ingredients.ingredients:
                 if int(ingredient["id"]) == int(recipe_ingredient):

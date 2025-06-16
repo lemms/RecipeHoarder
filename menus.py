@@ -210,10 +210,10 @@ class GenerateGroceryListScreen(Screen):
                     for recipe_ingredient_idx, recipe_ingredient in enumerate(recipe["ingredients"]):
                         try:
                             ingredient_idx = grocery_list_ingredients.index(recipe_ingredient)
-                            grocery_list_amounts[ingredient_idx] += int(recipe["amounts"][recipe_ingredient_idx])
+                            grocery_list_amounts[ingredient_idx] += float(recipe["amounts"][recipe_ingredient_idx])
                         except ValueError:
                             grocery_list_ingredients.append(recipe_ingredient)
-                            grocery_list_amounts.append(int(recipe["amounts"][recipe_ingredient_idx]))
+                            grocery_list_amounts.append(float(recipe["amounts"][recipe_ingredient_idx]))
 
         grocery_list_ingredient_names = []
         grocery_list_ingredient_units_of_measure = []

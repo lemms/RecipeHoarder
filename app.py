@@ -9,7 +9,6 @@ from textual.widgets import Header, Footer, Static, Label, ListView, ListItem
 import recipes
 import ingredients
 import menus
-import grocery_lists
 
 data_path = ""
 
@@ -18,7 +17,6 @@ class RecipeApp(App):
     SCREENS = {"recipes": recipes.RecipesScreen,
                "ingredients": ingredients.IngredientsScreen,
                "menus": menus.MenusScreen,
-               "grocery_lists": grocery_lists.GroceryListsScreen,
                "add_recipe": recipes.AddRecipeScreen,
                "list_recipes": recipes.ListRecipesScreen,
                "view_recipe": recipes.ViewRecipeScreen,
@@ -27,9 +25,6 @@ class RecipeApp(App):
                "view_ingredient": ingredients.ViewIngredientScreen,
                "add_menu": menus.AddMenuScreen,
                "list_menus": menus.ListMenusScreen,
-               "add_grocery_list": grocery_lists.AddGroceryListScreen,
-               "list_grocery_lists": grocery_lists.ListGroceryListsScreen,
-               "view_grocery_list": grocery_lists.ViewGroceryListScreen,
                "recipe_ingredient_search": recipes.RecipeIngredientSearchScreen,
                "recipe_add_ingredient": recipes.RecipeAddIngredientScreen}
 
@@ -39,7 +34,6 @@ class RecipeApp(App):
         yield ListView(ListItem(Label("Recipes"), id="recipes"),
                        ListItem(Label("Ingredients"), id="ingredients"),
                        ListItem(Label("Menus"), id="menus"),
-                       ListItem(Label("Grocery Lists"), id="grocery_lists"),
                        ListItem(Label("Quit"), id="quit"),
                        id="main_list")
         yield Footer()
@@ -51,8 +45,6 @@ class RecipeApp(App):
             self.app.push_screen("ingredients")
         elif event.item.id == "menus":
             self.app.push_screen("menus")
-        elif event.item.id == "grocery_lists":
-            self.app.push_screen("grocery_lists")
         elif event.item.id == "quit":
             self.action_quit()
     
@@ -70,8 +62,6 @@ class RecipeApp(App):
             json.dump(ingredients.ingredients, f)
         with open(data_path + "/menus.json", "w") as f:
             json.dump(menus.menus, f)
-        with open(data_path + "/grocery_lists.json", "w") as f:
-            json.dump(grocery_lists.grocery_lists, f)
         self.exit()
 
 if __name__ == "__main__":
@@ -90,9 +80,6 @@ if __name__ == "__main__":
     if os.path.exists(data_path + "/menus.json") and os.path.isfile(data_path + "/menus.json"):
         with open(data_path + "/menus.json", "r") as f:
             menus.menus = json.load(f)
-    if os.path.exists(data_path + "/grocery_lists.json") and os.path.isfile(data_path + "/grocery_lists.json"):
-        with open(data_path + "/grocery_lists.json", "r") as f:
-            grocery_lists.grocery_lists = json.load(f)
 
     with open(data_path + "/recipes_backup.json", "w") as f:
         json.dump(recipes.recipes, f)
@@ -100,14 +87,11 @@ if __name__ == "__main__":
         json.dump(ingredients.ingredients, f)
     with open(data_path + "/menus_backup.json", "w") as f:
         json.dump(menus.menus, f)
-    with open(data_path + "/grocery_lists_backup.json", "w") as f:
-        json.dump(grocery_lists.grocery_lists, f)
 
     # TODO: Remove this
     print(recipes.recipes)
     print(ingredients.ingredients)
     print(menus.menus)
-    print(grocery_lists.grocery_lists)
 
     app = RecipeApp()
     app.run()

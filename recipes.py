@@ -228,6 +228,8 @@ class ViewRecipeScreen(Screen):
                 if int(recipe["id"]) == int(self.view_recipe_id):
                     recipe["deleted"] = True
 
+            self.view_recipe_id = None
+
             self.dismiss(None)
 
 class ListRecipesScreen(Screen):

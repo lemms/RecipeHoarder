@@ -19,35 +19,60 @@ def find_max_ingredient_id() -> int:
 class AddIngredientScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
+    ingredient_name_input = None
+    unit_of_measure_list = None
+    category_list = None
+
+    def clear_ingredient_form(self) -> None:
+        self.ingredient_name_input.value = ""
+        self.unit_of_measure_list.index = 0
+        self.category_list.index = 0
+
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static("Add Ingredient", id="title")
-        yield Input(placeholder="Ingredient Name", id="ingredient_name", type="text")
+        self.ingredient_name_input = Input(placeholder="Ingredient Name", id="ingredient_name", type="text")
+        yield self.ingredient_name_input
         yield Label("Unit of Measure")
-        yield ListView(ListItem(Label("lbs"), id="unit_lbs"),
-                       ListItem(Label("oz"), id="unit_oz"),
-                       ListItem(Label("g"), id="unit_g"),
-                       ListItem(Label("kg"), id="unit_kg"),
-                       ListItem(Label("ml"), id="unit_ml"),
-                       ListItem(Label("l"), id="unit_l"),
-                       ListItem(Label("cups"), id="unit_cups"),
-                       ListItem(Label("tsp"), id="unit_tsp"),
-                       ListItem(Label("tbsp"), id="unit_tbsp"),
-                       ListItem(Label("fl oz"), id="unit_fl_oz"),
-                       ListItem(Label("pints"), id="unit_pints"),
-                       ListItem(Label("quarts"), id="unit_quarts"),
-                       ListItem(Label("gallons"), id="unit_gallons"),
-                       ListItem(Label("pieces"), id="pieces"),
-                       id="unit_of_measure_list")
+        self.unit_of_measure_list = ListView(ListItem(Label("lbs"), id="unit_lbs"),
+                                             ListItem(Label("oz"), id="unit_oz"),
+                                             ListItem(Label("g"), id="unit_g"),
+                                             ListItem(Label("kg"), id="unit_kg"),
+                                             ListItem(Label("ml"), id="unit_ml"),
+                                             ListItem(Label("l"), id="unit_l"),
+                                             ListItem(Label("cups"), id="unit_cups"),
+                                             ListItem(Label("tsp"), id="unit_tsp"),
+                                             ListItem(Label("tbsp"), id="unit_tbsp"),
+                                             ListItem(Label("fl oz"), id="unit_fl_oz"),
+                                             ListItem(Label("pints"), id="unit_pints"),
+                                             ListItem(Label("quarts"), id="unit_quarts"),
+                                             ListItem(Label("gallons"), id="unit_gallons"),
+                                             ListItem(Label("pieces"), id="unit_pieces"),
+                                             id="unit_of_measure_list")
+        yield self.unit_of_measure_list
+        yield Label("Category")
+        self.category_list = ListView(ListItem(Label("Produce"), id="category_produce"),
+                                      ListItem(Label("Dairy"), id="category_dairy"),
+                                      ListItem(Label("Meat"), id="category_meat"),
+                                      ListItem(Label("Seafood"), id="category_seafood"),
+                                      ListItem(Label("Bakery"), id="category_bakery"),
+                                      ListItem(Label("Frozen"), id="category_frozen"),
+                                      ListItem(Label("Pantry"), id="category_pantry"),
+                                      ListItem(Label("Other"), id="category_other"))
+        yield self.category_list
         yield Button("Submit", id="add_ingredient")
         yield Footer()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "add_ingredient":
-            unit_of_measure_list = self.query_one("#unit_of_measure_list")
-            unit_of_measure = unit_of_measure_list.children[unit_of_measure_list.index].id[5:]
+            unit_of_measure = self.unit_of_measure_list.children[self.unit_of_measure_list.index].id[5:]
+            category = self.category_list.children[self.category_list.index].id[9:]
             max_id = find_max_ingredient_id()
-            ingredients.append({"id": max_id + 1, "name": self.query_one("#ingredient_name").value, "unit_of_measure": unit_of_measure, "deleted": False})
+
+            ingredients.append({"id": max_id + 1, "name": self.query_one("#ingredient_name").value, "unit_of_measure": unit_of_measure, "deleted": False, "category": category})
+
+            self.clear_ingredient_form()
+
             self.app.pop_screen()
 
 class ViewIngredientScreen(Screen):
@@ -81,12 +106,21 @@ class ViewIngredientScreen(Screen):
                 if int(ingredient["id"]) == int(self.view_ingredient_id):
                     ingredient["deleted"] = True
 
+            self.view_ingredient_id = None
+
             self.dismiss(None)
 
 class ListIngredientsScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
     list_view = None
+
+    async def refresh_list_view(self) -> None:
+        await self.list_view.clear()
+
+        for ingredient_idx, ingredient in enumerate(ingredients):
+            if not ingredient["deleted"]:
+                self.list_view.append(ListItem(Label(f'{ingredient["name"]} ({ingredient["unit_of_measure"]}) ({ingredient["category"]})'), id=f'ingredient_{ingredient_idx}'))
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -106,11 +140,7 @@ class ListIngredientsScreen(Screen):
 
     @on(ScreenResume)
     async def handle_list_ingredients_screen_resumed(self) -> None:
-        await self.list_view.clear()
-
-        for ingredient_idx, ingredient in enumerate(ingredients):
-            if not ingredient["deleted"]:
-                self.list_view.append(ListItem(Label(ingredient["name"]), id=f'ingredient_{ingredient_idx}'))
+        await self.refresh_list_view()
 
 class IngredientsScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]

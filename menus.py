@@ -359,6 +359,8 @@ class ViewMenuScreen(Screen):
             recipe_servings = None
             recipe_time = None
             recipe_stars = None
+            recipe_source = None
+
             for recipe in recipes.recipes:
                 if int(recipe["id"]) == int(menu_recipe):
                     recipe_name = recipe["name"]
@@ -366,8 +368,13 @@ class ViewMenuScreen(Screen):
                     recipe_time = recipe["time"]
                     recipe_stars = recipe["stars"]
                     menu_total_servings += recipe_servings
+                    recipe_source = recipe["source"]
                     break
-            yield Label(f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars")
+
+            if recipe_source is not None and recipe_source != "":
+                yield Label(f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars ({recipe_source})")
+            else:
+                yield Label(f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars")
 
         menu_total_servings_label = f"Total Servings: {menu_total_servings}"
         self.menu_total_servings_label = Label(menu_total_servings_label)

@@ -105,6 +105,7 @@ class AddRecipeScreen(Screen):
     recipe_instructions_text_area = None
     list_view = None
     recipe_tags_text_area = None
+    recipe_source_input = None
 
     async def clear_recipe(self) -> None:
         self.recipe_ingredients = []
@@ -116,6 +117,7 @@ class AddRecipeScreen(Screen):
         self.recipe_stars_input.value = "5"
         self.recipe_instructions_text_area.text = ""
         self.recipe_tags_text_area.text = ""
+        self.recipe_source_input.value = ""
 
     async def refresh_list_view(self) -> None:
         await self.list_view.clear()
@@ -156,6 +158,9 @@ class AddRecipeScreen(Screen):
         yield Label("Tags")
         self.recipe_tags_text_area = TextArea(id="recipe_tags")
         yield self.recipe_tags_text_area
+        yield Label("Source (Book/Website)")
+        self.recipe_source_input = Input(placeholder="Source (Book/Website)", id="recipe_source", type="text")
+        yield self.recipe_source_input
         yield Button("Submit", id="add_recipe")
         yield Footer()
 
@@ -193,7 +198,8 @@ class AddRecipeScreen(Screen):
                           "deleted": False,
                           "instructions": self.recipe_instructions_text_area.text,
                           "stars": self.recipe_stars_input.value,
-                          "tags": recipe_tags}
+                          "tags": recipe_tags,
+                          "source": self.recipe_source_input.value}
 
                 recipes.append(recipe)
 
@@ -225,6 +231,9 @@ class ViewRecipeScreen(Screen):
         recipe_servings = None
         recipe_ingredients = None
         recipe_amounts = None
+        recipe_tags = None
+        recipe_stars = None
+        recipe_source = None
         for recipe in recipes:
             if int(recipe["id"]) == int(self.view_recipe_id):
                 recipe_name = recipe["name"]
@@ -233,6 +242,9 @@ class ViewRecipeScreen(Screen):
                 recipe_servings = recipe["servings"]
                 recipe_ingredients = recipe["ingredients"]
                 recipe_amounts = recipe["amounts"]
+                recipe_tags = recipe["tags"]
+                recipe_stars = recipe["stars"]
+                recipe_source = recipe["source"]
                 break
 
         yield Label(f"Recipe Name: {recipe_name}")
@@ -256,12 +268,14 @@ class ViewRecipeScreen(Screen):
         yield Label("Instructions")
         yield Label(recipe_instructions)
 
-        if len(recipe["tags"]) > 0:
+        if recipe_tags is not None and len(recipe_tags) > 0:
             yield Label("Tags")
-            for tag in recipe["tags"]:
+            for tag in recipe_tags:
                 yield Label(tag)
 
-        yield Label(f'Star Rating: {recipe["stars"]}')
+        yield Label(f'Star Rating: {recipe_stars}')
+        if recipe_source is not None and recipe_source != "":
+            yield Label(f'Source: {recipe_source}')
 
         yield Button("Delete Recipe", id="delete_recipe")
         yield Footer()

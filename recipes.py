@@ -35,19 +35,6 @@ def search_ingredient(ingredient_name: str, match_limit: int = 10) -> list:
 
     return name_matches, id_matches
 
-class RecipeAddIngredientScreen(Screen):
-    BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
-
-    ingredient_name = ""
-    ingredient_id = None
-    
-    def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("Add Ingredient", id="title")
-        yield Label(f"Ingredient Name: {self.ingredient_name}")
-        yield Input(placeholder="Ingredient Amount", id="ingredient_amount", type="number")
-        yield Button("Submit", id="submit")
-
 class RecipeIngredientSearchScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
@@ -256,7 +243,8 @@ class ListRecipesScreen(Screen):
         yield Footer()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
-        recipe_id = event.item.id[7:]
+        recipe_idx = int(event.item.id[7:])
+        recipe_id = recipes[recipe_idx]["id"]
 
         self.app.push_screen(ViewRecipeScreen(recipe_id))
 

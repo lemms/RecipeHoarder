@@ -134,7 +134,8 @@ class ListIngredientsScreen(Screen):
         yield Footer()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
-        ingredient_id = event.item.id[11:]
+        ingredient_idx = int(event.item.id[11:])
+        ingredient_id = ingredients[ingredient_idx]["id"]
 
         self.app.push_screen(ViewIngredientScreen(ingredient_id))
 

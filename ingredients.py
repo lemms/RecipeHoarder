@@ -36,6 +36,14 @@ class AddIngredientScreen(Screen):
         yield Label("Unit of Measure")
         self.unit_of_measure_list = ListView(ListItem(Label("lbs"), id="unit_lbs"),
                                              ListItem(Label("oz"), id="unit_oz"),
+                                             ListItem(Label("fl oz"), id="unit_fl_oz"),
+                                             ListItem(Label("cans"), id="unit_cans"),
+                                             ListItem(Label("bottles"), id="unit_bottles"),
+                                             ListItem(Label("boxes"), id="unit_boxes"),
+                                             ListItem(Label("jars"), id="unit_jars"),
+                                             ListItem(Label("bags"), id="unit_bags"),
+                                             ListItem(Label("cartons"), id="unit_cartons"),
+                                             ListItem(Label("pieces"), id="unit_pieces"),
                                              ListItem(Label("g"), id="unit_g"),
                                              ListItem(Label("kg"), id="unit_kg"),
                                              ListItem(Label("ml"), id="unit_ml"),
@@ -43,11 +51,13 @@ class AddIngredientScreen(Screen):
                                              ListItem(Label("cups"), id="unit_cups"),
                                              ListItem(Label("tsp"), id="unit_tsp"),
                                              ListItem(Label("tbsp"), id="unit_tbsp"),
-                                             ListItem(Label("fl oz"), id="unit_fl_oz"),
                                              ListItem(Label("pints"), id="unit_pints"),
                                              ListItem(Label("quarts"), id="unit_quarts"),
                                              ListItem(Label("gallons"), id="unit_gallons"),
-                                             ListItem(Label("pieces"), id="unit_pieces"),
+                                             ListItem(Label("heads"), id="unit_heads"),
+                                             ListItem(Label("bunches"), id="unit_bunches"),
+                                             ListItem(Label("cloves"), id="unit_cloves"),
+                                             ListItem(Label("bulbs"), id="unit_bulbs"),
                                              id="unit_of_measure_list")
         yield self.unit_of_measure_list
         yield Label("Category")

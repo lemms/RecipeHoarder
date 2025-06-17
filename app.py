@@ -12,7 +12,7 @@ import menus
 
 data_path = ""
 
-class RecipeApp(App):
+class RecipeHoarder(App):
     BINDINGS = [("d", "toggle_dark", "Toggle dark mode"), ("q", "quit", "Quit")]
     SCREENS = {"recipes": recipes.RecipesScreen,
                "ingredients": ingredients.IngredientsScreen,
@@ -31,7 +31,6 @@ class RecipeApp(App):
 
     def compose(self) -> ComposeResult:
         yield Header()
-        yield Static("Recipes App", id="title")
         yield ListView(ListItem(Label("Recipes"), id="recipes"),
                        ListItem(Label("Ingredients"), id="ingredients"),
                        ListItem(Label("Menus"), id="menus"),
@@ -95,5 +94,5 @@ if __name__ == "__main__":
         print(ingredients.ingredients)
         print(menus.menus)
 
-    app = RecipeApp()
+    app = RecipeHoarder()
     app.run()

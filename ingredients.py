@@ -16,6 +16,66 @@ def find_max_ingredient_id() -> int:
 
     return max_id
 
+units_of_measure = ["lbs",
+                    "oz",
+                    "fl_oz",
+                    "tsp",
+                    "tbsp",
+                    "cups",
+                    "pieces",
+                    "cans",
+                    "bags",
+                    "packages",
+                    "bottles",
+                    "boxes",
+                    "jars",
+                    "cartons",
+                    "containers",
+                    "cloves",
+                    "loaves",
+                    "slices",
+                    "g",
+                    "kg",
+                    "ml",
+                    "l",
+                    "pints",
+                    "quarts",
+                    "gallons",
+                    "heads",
+                    "bunches",
+                    "bulbs"]
+
+def create_unit_of_measure_list_view() -> ListView:
+    list_items = []
+    for unit_of_measure in units_of_measure:
+        list_items.append(ListItem(Label(unit_of_measure.replace("_", " ")), id=f"unit_{unit_of_measure}"))
+
+    return ListView(*list_items, id="unit_of_measure_list")
+
+def unit_of_measure_list_index(unit_of_measure: str) -> int:
+    return units_of_measure.index(unit_of_measure)
+
+categories = ["Produce",
+              "Dairy",
+              "Meat",
+              "Seafood",
+              "Bakery",
+              "Frozen",
+              "Pantry",
+              "Other"]
+
+categories_lower = [category.lower() for category in categories]
+
+def create_category_list_view() -> ListView:
+    list_items = []
+    for category in categories:
+        list_items.append(ListItem(Label(category), id=f"category_{category.lower()}"))
+
+    return ListView(*list_items, id="category_list")
+
+def category_list_index(category: str) -> int:
+    return categories_lower.index(category.lower())
+
 class AddIngredientScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
@@ -34,45 +94,10 @@ class AddIngredientScreen(Screen):
         self.ingredient_name_input = Input(placeholder="Ingredient Name", id="ingredient_name", type="text")
         yield self.ingredient_name_input
         yield Label("Unit of Measure")
-        self.unit_of_measure_list = ListView(ListItem(Label("lbs"), id="unit_lbs"),
-                                             ListItem(Label("oz"), id="unit_oz"),
-                                             ListItem(Label("fl oz"), id="unit_fl_oz"),
-                                             ListItem(Label("tsp"), id="unit_tsp"),
-                                             ListItem(Label("tbsp"), id="unit_tbsp"),
-                                             ListItem(Label("cups"), id="unit_cups"),
-                                             ListItem(Label("pieces"), id="unit_pieces"),
-                                             ListItem(Label("cans"), id="unit_cans"),
-                                             ListItem(Label("bags"), id="unit_bags"),
-                                             ListItem(Label("packages"), id="unit_packages"),
-                                             ListItem(Label("bottles"), id="unit_bottles"),
-                                             ListItem(Label("boxes"), id="unit_boxes"),
-                                             ListItem(Label("jars"), id="unit_jars"),
-                                             ListItem(Label("cartons"), id="unit_cartons"),
-                                             ListItem(Label("containers"), id="unit_containers"),
-                                             ListItem(Label("cloves"), id="unit_cloves"),
-                                             ListItem(Label("loaves"), id="unit_loaves"),
-                                             ListItem(Label("slices"), id="unit_slices"),
-                                             ListItem(Label("g"), id="unit_g"),
-                                             ListItem(Label("kg"), id="unit_kg"),
-                                             ListItem(Label("ml"), id="unit_ml"),
-                                             ListItem(Label("l"), id="unit_l"),
-                                             ListItem(Label("pints"), id="unit_pints"),
-                                             ListItem(Label("quarts"), id="unit_quarts"),
-                                             ListItem(Label("gallons"), id="unit_gallons"),
-                                             ListItem(Label("heads"), id="unit_heads"),
-                                             ListItem(Label("bunches"), id="unit_bunches"),
-                                             ListItem(Label("bulbs"), id="unit_bulbs"),
-                                             id="unit_of_measure_list")
+        self.unit_of_measure_list = create_unit_of_measure_list_view()
         yield self.unit_of_measure_list
         yield Label("Category")
-        self.category_list = ListView(ListItem(Label("Produce"), id="category_produce"),
-                                      ListItem(Label("Dairy"), id="category_dairy"),
-                                      ListItem(Label("Meat"), id="category_meat"),
-                                      ListItem(Label("Seafood"), id="category_seafood"),
-                                      ListItem(Label("Bakery"), id="category_bakery"),
-                                      ListItem(Label("Frozen"), id="category_frozen"),
-                                      ListItem(Label("Pantry"), id="category_pantry"),
-                                      ListItem(Label("Other"), id="category_other"))
+        self.category_list = create_category_list_view()
         yield self.category_list
         yield Button("Submit", id="add_ingredient")
         yield Footer()
@@ -89,14 +114,97 @@ class AddIngredientScreen(Screen):
 
             self.app.pop_screen()
 
+class EditIngredientScreen(Screen):
+    BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
+
+    ingredient_name_input = None
+    unit_of_measure_list = None
+    category_list = None
+
+    edit_ingredient_id = None
+
+    def __init__(self, edit_ingredient_id: int):
+        self.edit_ingredient_id = edit_ingredient_id
+        super().__init__()
+
+    def clear_ingredient_form(self) -> None:
+        self.edit_ingredient_id = None
+        self.ingredient_name_input.value = ""
+        self.unit_of_measure_list.index = 0
+        self.category_list.index = 0
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Static("Edit Ingredient", id="title")
+
+        ingredient_name = None
+        unit_of_measure = None
+        category = None
+
+        for ingredient in ingredients:
+            if int(ingredient["id"]) == int(self.edit_ingredient_id):
+                ingredient_name = ingredient["name"]
+                unit_of_measure = ingredient["unit_of_measure"] 
+                category = ingredient["category"]
+                break
+
+        self.ingredient_name_input = Input(placeholder="Ingredient Name", id="ingredient_name", type="text", value=ingredient_name)
+        yield self.ingredient_name_input
+        yield Label("Unit of Measure")
+        self.unit_of_measure_list = create_unit_of_measure_list_view()
+        self.unit_of_measure_list._initial_index = unit_of_measure_list_index(unit_of_measure)
+        yield self.unit_of_measure_list
+        yield Label("Category")
+        self.category_list = create_category_list_view()
+        self.category_list._initial_index = category_list_index(category)
+        yield self.category_list
+        yield Button("Submit", id="edit_ingredient")
+        yield Footer()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "edit_ingredient":
+            unit_of_measure = self.unit_of_measure_list.children[self.unit_of_measure_list.index].id[5:]
+            category = self.category_list.children[self.category_list.index].id[9:]
+
+            for ingredient in ingredients:
+                if int(ingredient["id"]) == int(self.edit_ingredient_id):
+                    ingredient["name"] = self.query_one("#ingredient_name").value
+                    ingredient["unit_of_measure"] = unit_of_measure
+                    ingredient["deleted"] = False
+                    ingredient["category"] = category
+                    break
+
+            self.clear_ingredient_form()
+
+            self.dismiss(self.edit_ingredient_id)
+
 class ViewIngredientScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
     view_ingredient_id = None
+    ingredient_name_label = None
+    ingredient_unit_of_measure_label = None
+    ingredient_category_label = None
 
     def __init__(self, view_ingredient_id: int):
         self.view_ingredient_id = view_ingredient_id
         super().__init__()
+
+    def refresh_ingredient_form(self) -> None:
+        ingredient_name = None
+        ingredient_unit_of_measure = None
+        ingredient_category = None
+
+        for ingredient in ingredients:
+            if int(ingredient["id"]) == int(self.view_ingredient_id):
+                ingredient_name = ingredient["name"]
+                ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                ingredient_category = ingredient["category"]
+                break
+        
+        self.ingredient_name_label.update(f"Ingredient Name: {ingredient_name}")
+        self.ingredient_unit_of_measure_label.update(f"Unit of Measure: {ingredient_unit_of_measure}")
+        self.ingredient_category_label.update(f"Category: {ingredient_category}") 
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -105,15 +213,21 @@ class ViewIngredientScreen(Screen):
         ingredient_name = None
         ingredient_unit_of_measure = None
         ingredient_category = None
+
         for ingredient in ingredients:
             if int(ingredient["id"]) == int(self.view_ingredient_id):
                 ingredient_name = ingredient["name"]
                 ingredient_unit_of_measure = ingredient["unit_of_measure"]
                 ingredient_category = ingredient["category"]
+                break
 
-        yield Label(f"Ingredient Name: {ingredient_name}")
-        yield Label(f"Unit of Measure: {ingredient_unit_of_measure}")
-        yield Label(f"Category: {ingredient_category}")
+        self.ingredient_name_label = Label(f"Ingredient Name: {ingredient_name}")
+        yield self.ingredient_name_label
+        self.ingredient_unit_of_measure_label = Label(f"Unit of Measure: {ingredient_unit_of_measure}")
+        yield self.ingredient_unit_of_measure_label
+        self.ingredient_category_label = Label(f"Category: {ingredient_category}")
+        yield self.ingredient_category_label
+        yield Button("Edit Ingredient", id="edit_ingredient")
         yield Button("Delete Ingredient", id="delete_ingredient")
         yield Footer()
 
@@ -126,6 +240,13 @@ class ViewIngredientScreen(Screen):
             self.view_ingredient_id = None
 
             self.dismiss(None)
+        elif event.button.id == "edit_ingredient":
+            ingredient_screen = self
+
+            async def edit_ingredient(ingredient_id) -> None:
+                ingredient_screen.refresh_ingredient_form()
+
+            self.app.push_screen(EditIngredientScreen(self.view_ingredient_id), edit_ingredient)
 
 class ListIngredientsScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]

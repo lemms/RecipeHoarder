@@ -48,7 +48,6 @@ class RecipeIngredientSearchScreen(Screen):
     ingredient_name_input = None
     list_view = None
     ingredient_amount_input = None
-    amount_label = None
 
     async def clear_ingredient_search(self) -> None:
         self.name_matches = []
@@ -80,8 +79,7 @@ class RecipeIngredientSearchScreen(Screen):
         yield Label("Select Ingredient")
         self.list_view = ListView()
         yield self.list_view
-        self.amount_label = Label("Amount")
-        yield self.amount_label
+        yield Label("Amount")
         self.ingredient_amount_input = Input(placeholder="Ingredient Amount", id="ingredient_amount", type="number", value="0")
         yield self.ingredient_amount_input
         yield Button("Add Ingredient", id="add_ingredient")

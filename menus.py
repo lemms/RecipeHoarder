@@ -134,9 +134,7 @@ class AddMenuScreen(Screen):
 
             self.menu_recipe_list.append(ListItem(Label(f'{menu_recipe_name} ({menu_recipe_servings} servings) ({menu_recipe_time}) {menu_recipe_stars} stars'), id=f'menu_recipe_{menu_recipe_idx}'))
 
-        menu_servings_label = f"Total Servings: {self.menu_servings}"
-        self.menu_total_servings_label.label = menu_servings_label
-        self.menu_total_servings_label.update(menu_servings_label)
+        self.menu_total_servings_label.update(f"Total Servings: {self.menu_servings}")
         self.menu_total_servings_label.refresh()
 
     def compose(self) -> ComposeResult:
@@ -376,8 +374,7 @@ class ViewMenuScreen(Screen):
             else:
                 yield Label(f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars")
 
-        menu_total_servings_label = f"Total Servings: {menu_total_servings}"
-        self.menu_total_servings_label = Label(menu_total_servings_label)
+        self.menu_total_servings_label = Label(f"Total Servings: {menu_total_servings}")
         yield self.menu_total_servings_label
 
         yield Button("Generate Grocery List", id="generate_grocery_list")

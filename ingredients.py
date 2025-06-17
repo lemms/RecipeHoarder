@@ -43,6 +43,7 @@ class AddIngredientScreen(Screen):
                                              ListItem(Label("jars"), id="unit_jars"),
                                              ListItem(Label("bags"), id="unit_bags"),
                                              ListItem(Label("cartons"), id="unit_cartons"),
+                                             ListItem(Label("containers"), id="unit_containers"),
                                              ListItem(Label("packages"), id="unit_packages"),
                                              ListItem(Label("pieces"), id="unit_pieces"),
                                              ListItem(Label("cups"), id="unit_cups"),

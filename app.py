@@ -82,17 +82,24 @@ if __name__ == "__main__":
         with open(data_path + "/menus.json", "r") as f:
             menus.menus = json.load(f)
 
-    with open(data_path + "/recipes_backup.json", "w") as f:
-        json.dump(recipes.recipes, f)
-    with open(data_path + "/ingredients_backup.json", "w") as f:
-        json.dump(ingredients.ingredients, f)
-    with open(data_path + "/menus_backup.json", "w") as f:
-        json.dump(menus.menus, f)
-
     if args.debug:
         print(recipes.recipes)
         print(ingredients.ingredients)
         print(menus.menus)
+
+        with open(data_path + "/recipes_backup.json", "w") as f:
+            f.write(json.dumps(recipes.recipes, indent=4))
+        with open(data_path + "/ingredients_backup.json", "w") as f:
+            f.write(json.dumps(ingredients.ingredients, indent=4))
+        with open(data_path + "/menus_backup.json", "w") as f:
+            f.write(json.dumps(menus.menus, indent=4))
+    else:
+        with open(data_path + "/recipes_backup.json", "w") as f:
+            json.dump(recipes.recipes, f)
+        with open(data_path + "/ingredients_backup.json", "w") as f:
+            json.dump(ingredients.ingredients, f)
+        with open(data_path + "/menus_backup.json", "w") as f:
+            json.dump(menus.menus, f)
 
     app = RecipeHoarder()
     app.run()

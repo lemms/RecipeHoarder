@@ -50,6 +50,8 @@ class AddIngredientScreen(Screen):
                                              ListItem(Label("tsp"), id="unit_tsp"),
                                              ListItem(Label("tbsp"), id="unit_tbsp"),
                                              ListItem(Label("cloves"), id="unit_cloves"),
+                                             ListItem(Label("loaves"), id="unit_loaves"),
+                                             ListItem(Label("slices"), id="unit_slices"),
                                              ListItem(Label("g"), id="unit_g"),
                                              ListItem(Label("kg"), id="unit_kg"),
                                              ListItem(Label("ml"), id="unit_ml"),

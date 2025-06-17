@@ -25,13 +25,17 @@ def search_ingredient(ingredient_name: str, match_limit: int = 50) -> list:
     ingredient_names = [ingredient["name"] for ingredient in ingredients.ingredients]
     string_matches = process.extract(ingredient_name, ingredient_names, limit=match_limit)
 
+    ingredients_matched = [False] * len(ingredients.ingredients)
+
     name_matches = [string_match[0] for string_match in string_matches]
     id_matches = []
     for name_match in name_matches:
-        for ingredient in ingredients.ingredients:
-            if ingredient["name"] == name_match:
-                id_matches.append(ingredient["id"])
-                break
+        for ingredient_idx, ingredient in enumerate(ingredients.ingredients):
+            if not ingredients_matched[ingredient_idx]:
+                if ingredient["name"] == name_match:
+                    id_matches.append(ingredient["id"])
+                    ingredients_matched[ingredient_idx] = True
+                    break
 
     return name_matches, id_matches
 

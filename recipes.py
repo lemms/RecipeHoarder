@@ -298,18 +298,6 @@ class EditRecipeScreen(Screen):
         self.recipe_ingredients = recipe_ingredients
         self.recipe_amounts = recipe_amounts
 
-        yield Header()
-        yield Static("Edit Recipe", id="title")
-        self.recipe_name_input = Input(placeholder="Recipe Name", id="recipe_name", type="text", value=recipe_name)
-        yield self.recipe_name_input
-        yield Label("Servings")
-        self.recipe_servings_input = Input(placeholder="Servings", id="recipe_servings", type="number", value=recipe_servings)
-        yield self.recipe_servings_input
-        yield Label("Time")
-        self.recipe_time_input = Input(placeholder="Time", id="recipe_time", type="text", value=recipe_time)
-        yield self.recipe_time_input
-        yield Button("Add Ingredient", id="add_ingredient")
-
         ingredient_list_items = []
         for ingredient_idx, recipe_ingredient in enumerate(self.recipe_ingredients):
             ingredient_name = None
@@ -323,6 +311,19 @@ class EditRecipeScreen(Screen):
             ingredient_amount = float(self.recipe_amounts[ingredient_idx])
 
             ingredient_list_items.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})'), id=f'ingredient_{ingredient_idx}'))
+
+        yield Header()
+        yield Static("Edit Recipe", id="title")
+        self.recipe_name_input = Input(placeholder="Recipe Name", id="recipe_name", type="text", value=recipe_name)
+        yield self.recipe_name_input
+        yield Label("Servings")
+        self.recipe_servings_input = Input(placeholder="Servings", id="recipe_servings", type="number", value=recipe_servings)
+        yield self.recipe_servings_input
+        yield Label("Time")
+        self.recipe_time_input = Input(placeholder="Time", id="recipe_time", type="text", value=recipe_time)
+        yield self.recipe_time_input
+        yield Button("Add Ingredient", id="add_ingredient")
+
         self.list_view = ListView(*ingredient_list_items)
         yield self.list_view
         yield Label("Instructions")

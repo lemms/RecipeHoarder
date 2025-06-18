@@ -207,9 +207,6 @@ class ViewIngredientScreen(Screen):
         self.ingredient_category_label.update(f"Category: {ingredient_category}") 
 
     def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("View Ingredient", id="title")
-
         ingredient_name = None
         ingredient_unit_of_measure = None
         ingredient_category = None
@@ -220,6 +217,9 @@ class ViewIngredientScreen(Screen):
                 ingredient_unit_of_measure = ingredient["unit_of_measure"]
                 ingredient_category = ingredient["category"]
                 break
+
+        yield Header()
+        yield Static("View Ingredient", id="title")
 
         self.ingredient_name_label = Label(f"Ingredient Name: {ingredient_name}")
         yield self.ingredient_name_label

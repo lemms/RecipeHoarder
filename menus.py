@@ -634,6 +634,7 @@ class ViewMenuScreen(Screen):
         yield self.menu_recipe_list
         self.menu_total_servings_label = Label(f"Total Servings: {menu_total_servings}")
         yield self.menu_total_servings_label
+        yield Button("Copy to Clipboard", id="copy_to_clipboard")
         yield Button("Generate Grocery List", id="generate_grocery_list")
         yield Button("Edit Menu", id="edit_menu")
         yield Button("Delete Menu", id="delete_menu")
@@ -656,6 +657,46 @@ class ViewMenuScreen(Screen):
         elif event.button.id == "generate_grocery_list":
             grocery_list_menu_id = self.view_menu_id
             self.app.push_screen(GenerateGroceryListScreen(grocery_list_menu_id))
+        elif event.button.id == "copy_to_clipboard":
+            menu_name = None
+            menu_recipes = None
+            for menu in menus:
+                if int(menu["id"]) == int(self.view_menu_id):
+                    menu_name = menu["name"]
+                    menu_recipes = menu["recipes"]
+                    break
+
+            menu_text = f"Menu: {menu_name}\n"
+            menu_text += "\n"
+
+            menu_total_servings = 0
+            menu_recipe_list_items = []
+            for menu_recipe_idx, menu_recipe in enumerate(menu_recipes):
+                recipe_name = None
+                recipe_servings = None
+                recipe_time = None
+                recipe_stars = None
+                recipe_source = None
+
+                for recipe in recipes.recipes:
+                    if int(recipe["id"]) == int(menu_recipe):
+                        recipe_name = recipe["name"]
+                        recipe_servings = int(recipe["servings"])
+                        recipe_time = recipe["time"]
+                        recipe_stars = recipe["stars"]
+                        menu_total_servings += recipe_servings
+                        recipe_source = recipe["source"]
+                        break
+
+                if recipe_source is not None and recipe_source != "":
+                    menu_text += f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars ({recipe_source})\n"
+                else:
+                    menu_text += f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars\n"
+
+            menu_text += "\n"
+            menu_text += f"Total Servings: {menu_total_servings}\n"
+
+            pyperclip.copy(menu_text)
 
 class ListMenusScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]

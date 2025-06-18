@@ -77,6 +77,7 @@ class MenuRecipeSearchScreen(Screen):
         self.list_view = ListView()
         yield self.list_view
         yield Button("Add Recipe", id="add_recipe")
+        yield Footer()
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "search_recipe":
@@ -312,8 +313,6 @@ class GenerateGroceryListScreen(Screen):
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("Grocery List", id="title")
 
         grocery_list_ingredients = []
         grocery_list_amounts = []
@@ -381,6 +380,9 @@ class GenerateGroceryListScreen(Screen):
                 other_ingredients.append(grocery_list_ingredient_idx)
             else:
                 raise Exception(f'Invalid ingredient category: {ingredient_category}')
+
+        yield Header()
+        yield Static("Grocery List", id="title")
 
         if len(produce_ingredients) > 0:
             yield Label("Produce")
@@ -532,18 +534,13 @@ class ViewMenuScreen(Screen):
 
         yield Header()
         yield Static("View Menu", id="title")
-
         self.menu_name_label = Label(f"Menu Name: {menu_name}")
         yield self.menu_name_label
-
         yield Label("Recipes")
-
         self.menu_recipe_list = ListView(*menu_recipe_list_items)
         yield self.menu_recipe_list
-
         self.menu_total_servings_label = Label(f"Total Servings: {menu_total_servings}")
         yield self.menu_total_servings_label
-
         yield Button("Generate Grocery List", id="generate_grocery_list")
         yield Button("Edit Menu", id="edit_menu")
         yield Button("Delete Menu", id="delete_menu")
@@ -580,12 +577,13 @@ class ListMenusScreen(Screen):
                 self.list_view.append(ListItem(Label(menu["name"]), id=f'menu_{menu_idx}'))
 
     def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("List Menus", id="title")
         list_items = []
         for menu_idx, menu in enumerate(menus):
             if not menu["deleted"]:
                 list_items.append(ListItem(Label(menu["name"]), id=f'menu_{menu_idx}'))
+
+        yield Header()
+        yield Static("List Menus", id="title")
         self.list_view = ListView(*list_items)
         yield self.list_view
         yield Footer()

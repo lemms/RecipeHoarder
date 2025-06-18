@@ -134,9 +134,6 @@ class EditIngredientScreen(Screen):
         self.category_list.index = 0
 
     def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("Edit Ingredient", id="title")
-
         ingredient_name = None
         unit_of_measure = None
         category = None
@@ -148,6 +145,8 @@ class EditIngredientScreen(Screen):
                 category = ingredient["category"]
                 break
 
+        yield Header()
+        yield Static("Edit Ingredient", id="title")
         self.ingredient_name_input = Input(placeholder="Ingredient Name", id="ingredient_name", type="text", value=ingredient_name)
         yield self.ingredient_name_input
         yield Label("Unit of Measure")
@@ -220,7 +219,6 @@ class ViewIngredientScreen(Screen):
 
         yield Header()
         yield Static("View Ingredient", id="title")
-
         self.ingredient_name_label = Label(f"Ingredient Name: {ingredient_name}")
         yield self.ingredient_name_label
         self.ingredient_unit_of_measure_label = Label(f"Unit of Measure: {ingredient_unit_of_measure}")
@@ -252,27 +250,51 @@ class ListIngredientsScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
     list_view = None
+    ingredient_data = []
 
     async def refresh_list_view(self) -> None:
         await self.list_view.clear()
 
+        self.ingredient_data = []
+
         for ingredient_idx, ingredient in enumerate(ingredients):
             if not ingredient["deleted"]:
-                self.list_view.append(ListItem(Label(f'{ingredient["name"]} ({ingredient["unit_of_measure"]}) ({ingredient["category"]})'), id=f'ingredient_{ingredient_idx}'))
+                self.ingredient_data.append({"index": ingredient_idx,
+                                             "name": ingredient["name"],
+                                             "unit_of_measure": ingredient["unit_of_measure"],
+                                             "category": ingredient["category"]})
+
+        self.ingredient_data.sort(key=lambda x: x["name"])
+
+        for ingredient_datum_idx, ingredient_datum in enumerate(self.ingredient_data):
+            self.list_view.append(ListItem(Label(f'{ingredient_datum["name"]} ({ingredient_datum["unit_of_measure"]}) ({ingredient_datum["category"]})'), id=f'ingredient_{ingredient_datum_idx}'))
 
     def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("List Ingredients", id="title")
-        list_items = []
+        self.ingredient_data = []
+
         for ingredient_idx, ingredient in enumerate(ingredients):
             if not ingredient["deleted"]:
-                list_items.append(ListItem(Label(ingredient["name"]), id=f'ingredient_{ingredient_idx}'))
+                self.ingredient_data.append({"index": ingredient_idx,
+                                        "name": ingredient["name"],
+                                        "unit_of_measure": ingredient["unit_of_measure"],
+                                        "category": ingredient["category"]})
+
+        self.ingredient_data.sort(key=lambda x: x["name"])
+
+        list_items = []
+        for ingredient_datum_idx, ingredient_datum in enumerate(self.ingredient_data):
+            list_items.append(ListItem(Label(f'{ingredient_datum["name"]} ({ingredient_datum["unit_of_measure"]}) ({ingredient_datum["category"]})'), id=f'ingredient_{ingredient_datum_idx}'))
+
+        yield Header()
+        yield Static("List Ingredients", id="title")
         self.list_view = ListView(*list_items)
         yield self.list_view
         yield Footer()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
-        ingredient_idx = int(event.item.id[11:])
+        ingredient_data_idx = int(event.item.id[11:])
+        ingredient_idx = self.ingredient_data[ingredient_data_idx]["index"]
+
         ingredient_id = ingredients[ingredient_idx]["id"]
 
         self.app.push_screen(ViewIngredientScreen(ingredient_id))

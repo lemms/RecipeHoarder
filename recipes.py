@@ -83,6 +83,7 @@ class RecipeIngredientSearchScreen(Screen):
         self.ingredient_amount_input = Input(placeholder="Ingredient Amount", id="ingredient_amount", type="number", value="0")
         yield self.ingredient_amount_input
         yield Button("Add Ingredient", id="add_ingredient")
+        yield Footer()
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "search_ingredient":
@@ -323,7 +324,6 @@ class EditRecipeScreen(Screen):
         self.recipe_time_input = Input(placeholder="Time", id="recipe_time", type="text", value=recipe_time)
         yield self.recipe_time_input
         yield Button("Add Ingredient", id="add_ingredient")
-
         self.list_view = ListView(*ingredient_list_items)
         yield self.list_view
         yield Label("Instructions")
@@ -475,18 +475,6 @@ class ViewRecipeScreen(Screen):
                 recipe_source = recipe["source"]
                 break
 
-        yield Header()
-        yield Static("View Recipe", id="title")
-
-        self.recipe_name_label = Label(f"Recipe Name: {recipe_name}")
-        yield self.recipe_name_label
-        self.recipe_time_label = Label(f"Time: {recipe_time}")
-        yield self.recipe_time_label
-        self.recipe_servings_label = Label(f"Servings: {recipe_servings}")
-        yield self.recipe_servings_label
-
-        yield Label("Ingredients")
-
         recipe_ingredients_list_items = []
 
         for recipe_ingredient_idx, recipe_ingredient in enumerate(recipe_ingredients):
@@ -502,22 +490,27 @@ class ViewRecipeScreen(Screen):
 
             recipe_ingredients_list_items.append(ListItem(Label(f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})"), id=f'ingredient_{recipe_ingredient_idx}'))
 
+        yield Header()
+        yield Static("View Recipe", id="title")
+        self.recipe_name_label = Label(f"Recipe Name: {recipe_name}")
+        yield self.recipe_name_label
+        self.recipe_time_label = Label(f"Time: {recipe_time}")
+        yield self.recipe_time_label
+        self.recipe_servings_label = Label(f"Servings: {recipe_servings}")
+        yield self.recipe_servings_label
+        yield Label("Ingredients")
         self.recipe_ingredients_list_view = ListView(*recipe_ingredients_list_items)
         yield self.recipe_ingredients_list_view
-
         yield Label("Instructions")
         self.recipe_instructions_label = Label(recipe_instructions)
         yield self.recipe_instructions_label
-
         yield Label("Tags")
         self.recipe_tags_label = Label(", ".join(recipe_tags))
         yield self.recipe_tags_label
-
         self.recipe_stars_label = Label(f'Star Rating: {recipe_stars}')
         yield self.recipe_stars_label
         self.recipe_source_label = Label(f'Source: {recipe_source}')
         yield self.recipe_source_label
-
         yield Button("Edit Recipe", id="edit_recipe")
         yield Button("Delete Recipe", id="delete_recipe")
         yield Footer()
@@ -552,12 +545,13 @@ class ListRecipesScreen(Screen):
                 self.list_view.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]}) {recipe["stars"]} stars'), id=f'recipe_{recipe_idx}'))
 
     def compose(self) -> ComposeResult:
-        yield Header()
-        yield Static("List Recipes", id="title")
         list_items = []
         for recipe_idx, recipe in enumerate(recipes):
             if not recipe["deleted"]:
                 list_items.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]}) {recipe["stars"]} stars'), id=f'recipe_{recipe_idx}'))
+
+        yield Header()
+        yield Static("List Recipes", id="title")
         self.list_view = ListView(*list_items, id="list_recipes")
         yield self.list_view
         yield Footer()

@@ -44,7 +44,7 @@ class AddRecipeScreen(Screen):
             for ingredient in ingredients_util.ingredients:
                 if int(ingredient["id"]) == int(recipe_ingredient):
                     ingredient_name = ingredient["name"]
-                    ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                    ingredient_unit_of_measure = ingredient["unit_of_measure"].replace("_", " ")
 
             ingredient_amount = float(self.recipe_amounts[ingredient_idx])
 

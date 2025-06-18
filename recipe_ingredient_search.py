@@ -33,7 +33,7 @@ class RecipeIngredientSearchScreen(Screen):
             ingredient_category = None
             for ingredient in ingredients_util.ingredients:
                 if int(ingredient["id"]) == int(id_match):
-                    ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                    ingredient_unit_of_measure = ingredient["unit_of_measure"].replace("_", " ")
                     ingredient_category = ingredient["category"]
 
             self.list_view.append(ListItem(Label(f'{name_match} ({ingredient_unit_of_measure}) ({ingredient_category})'), id=f'search_ingredient_{name_match_idx}'))

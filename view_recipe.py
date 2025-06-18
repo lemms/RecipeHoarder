@@ -64,7 +64,7 @@ class ViewRecipeScreen(Screen):
             for ingredient in ingredients_util.ingredients:
                 if int(ingredient["id"]) == int(recipe_ingredient):
                     ingredient_name = ingredient["name"]
-                    ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                    ingredient_unit_of_measure = ingredient["unit_of_measure"].replace("_", " ")
                     break
 
             if recipe_optional_flags[recipe_ingredient_idx] == True:
@@ -112,7 +112,7 @@ class ViewRecipeScreen(Screen):
             for ingredient in ingredients_util.ingredients:
                 if int(ingredient["id"]) == int(recipe_ingredient):
                     ingredient_name = ingredient["name"]
-                    ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                    ingredient_unit_of_measure = ingredient["unit_of_measure"].replace("_", " ")
                     break
 
             if recipe_optional_flags[recipe_ingredient_idx] == True:
@@ -205,7 +205,7 @@ class ViewRecipeScreen(Screen):
                 for ingredient in ingredients_util.ingredients:
                     if int(ingredient["id"]) == int(recipe_ingredient):
                         ingredient_name = ingredient["name"]
-                        ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                        ingredient_unit_of_measure = ingredient["unit_of_measure"].replace("_", " ")
                         break
 
                 if recipe_optional_flags[recipe_ingredient_idx] == True:

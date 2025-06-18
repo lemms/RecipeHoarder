@@ -39,10 +39,9 @@ def load_data():
             json.dump(menus_util.menus, f)
 
 def save_data():
-    if debug:
-        with open(data_path + "/ingredients.json", "w") as f:
-            json.dump(ingredients_util.ingredients, f)
-        with open(data_path + "/recipes.json", "w") as f:
-            json.dump(recipes_util.recipes, f)
-        with open(data_path + "/menus.json", "w") as f:
-            json.dump(menus_util.menus, f)
+    with open(data_path + "/ingredients.json", "w") as f:
+        json.dump(ingredients_util.ingredients, f)
+    with open(data_path + "/recipes.json", "w") as f:
+        json.dump(recipes_util.recipes, f)
+    with open(data_path + "/menus.json", "w") as f:
+        json.dump(menus_util.menus, f)

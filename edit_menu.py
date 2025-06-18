@@ -1,9 +1,6 @@
-from textual import on
 from textual.app import ComposeResult
-from textual.events import ScreenResume
 from textual.screen import Screen
 from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button
-from textual.containers import HorizontalGroup
 
 import recipes_util
 import menus_util
@@ -16,8 +13,10 @@ class EditMenuScreen(Screen):
     menu_recipes = []
     menu_name_input = None
     menu_total_servings_label = None
+    menu_average_stars_label = None
     menu_recipe_list = None
     menu_servings = 0
+    menu_total_stars = 0
 
     def __init__(self, edit_menu_id: int) -> None:
         self.edit_menu_id = edit_menu_id
@@ -27,14 +26,16 @@ class EditMenuScreen(Screen):
         self.edit_menu_id = None
         self.menu_recipes = []
         self.menu_servings = 0
+        self.menu_total_stars = 0
         self.menu_total_servings_label.update(f"Total Servings: {self.menu_servings}")
-        await self.menu_recipe_list.clear()
+        self.menu_average_stars_label.update(f"Stars: 5.0")
         self.menu_name_input.value = ""
 
     async def refresh_list_view(self) -> None:
         await self.menu_recipe_list.clear()
 
         self.menu_servings = 0
+        self.menu_total_stars = 0
 
         for menu_recipe_idx, menu_recipe in enumerate(self.menu_recipes):
             menu_recipe_name = None
@@ -46,14 +47,19 @@ class EditMenuScreen(Screen):
                     menu_recipe_name = recipe["name"]
                     menu_recipe_time = recipe["time"]
                     menu_recipe_servings = int(recipe["servings"])
-                    menu_recipe_stars = recipe["stars"]
+                    menu_recipe_stars = float(recipe["stars"])
 
                     self.menu_servings += menu_recipe_servings
+                    self.menu_total_stars += menu_recipe_stars
 
             self.menu_recipe_list.append(ListItem(Label(f'{menu_recipe_name} ({menu_recipe_servings} servings) ({menu_recipe_time}) {menu_recipe_stars} stars'), id=f'menu_recipe_{menu_recipe_idx}'))
 
+        menu_average_stars = self.menu_total_stars / len(self.menu_recipes)
+
         self.menu_total_servings_label.update(f"Total Servings: {self.menu_servings}")
         self.menu_total_servings_label.refresh()
+        self.menu_average_stars_label.update(f"Stars: {menu_average_stars}")
+        self.menu_average_stars_label.refresh()
 
     def compose(self) -> ComposeResult:
         menu_name = None
@@ -65,6 +71,7 @@ class EditMenuScreen(Screen):
                 break
 
         self.menu_servings = 0
+        self.menu_total_stars = 0
         menu_recipe_list_items = []
 
         for menu_recipe_idx, menu_recipe in enumerate(self.menu_recipes):
@@ -77,10 +84,14 @@ class EditMenuScreen(Screen):
                     menu_recipe_name = recipe["name"]
                     menu_recipe_time = recipe["time"]
                     menu_recipe_servings = int(recipe["servings"])
-                    menu_recipe_stars = recipe["stars"]
+                    menu_recipe_stars = float(recipe["stars"])
 
                     self.menu_servings += menu_recipe_servings
+                    self.menu_total_stars += menu_recipe_stars
+
                     menu_recipe_list_items.append(ListItem(Label(f'{menu_recipe_name} ({menu_recipe_servings} servings) ({menu_recipe_time}) {menu_recipe_stars} stars'), id=f'menu_recipe_{menu_recipe_idx}'))
+
+        menu_average_stars = self.menu_total_stars / len(self.menu_recipes)
 
         yield Header()
         yield Static("Add Menu", id="title")
@@ -92,6 +103,8 @@ class EditMenuScreen(Screen):
         yield self.menu_recipe_list
         self.menu_total_servings_label = Label(f"Total Servings: {self.menu_servings}")
         yield self.menu_total_servings_label
+        self.menu_average_stars_label = Label(f"Stars: {menu_average_stars}")
+        yield self.menu_average_stars_label
         yield Button("Submit", id="edit_menu")
         yield Footer()
 

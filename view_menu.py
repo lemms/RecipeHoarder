@@ -16,6 +16,7 @@ class ViewMenuScreen(Screen):
     menu_name_label = None
     menu_recipe_list = None
     menu_total_servings_label = None
+    menu_average_stars_label = None
 
     def __init__(self, view_menu_id: int) -> None:
         self.view_menu_id = view_menu_id
@@ -33,6 +34,7 @@ class ViewMenuScreen(Screen):
         self.menu_name_label.update(f"Menu Name: {menu_name}")
 
         menu_total_servings = 0
+        menu_total_stars = 0
         await self.menu_recipe_list.clear()
         for menu_recipe_idx, menu_recipe in enumerate(menu_recipes):
             recipe_name = None
@@ -46,8 +48,9 @@ class ViewMenuScreen(Screen):
                     recipe_name = recipe["name"]
                     recipe_servings = int(recipe["servings"])
                     recipe_time = recipe["time"]
-                    recipe_stars = recipe["stars"]
+                    recipe_stars = float(recipe["stars"])
                     menu_total_servings += recipe_servings
+                    menu_total_stars += recipe_stars
                     recipe_source = recipe["source"]
                     break
 
@@ -56,7 +59,10 @@ class ViewMenuScreen(Screen):
             else:
                 self.menu_recipe_list.append(ListItem(Label(f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars"), id=f'menu_recipe_{menu_recipe_idx}'))
 
+        menu_average_stars = menu_total_stars / len(menu_recipes)
+
         self.menu_total_servings_label.update(f"Total Servings: {menu_total_servings}")
+        self.menu_average_stars_label.update(f"Stars: {menu_average_stars}")
 
     def compose(self) -> ComposeResult:
         menu_name = None
@@ -68,6 +74,7 @@ class ViewMenuScreen(Screen):
                 break
 
         menu_total_servings = 0
+        menu_total_stars = 0
         menu_recipe_list_items = []
         for menu_recipe_idx, menu_recipe in enumerate(menu_recipes):
             recipe_name = None
@@ -81,8 +88,9 @@ class ViewMenuScreen(Screen):
                     recipe_name = recipe["name"]
                     recipe_servings = int(recipe["servings"])
                     recipe_time = recipe["time"]
-                    recipe_stars = recipe["stars"]
+                    recipe_stars = float(recipe["stars"])
                     menu_total_servings += recipe_servings
+                    menu_total_stars += recipe_stars
                     recipe_source = recipe["source"]
                     break
 
@@ -90,6 +98,8 @@ class ViewMenuScreen(Screen):
                 menu_recipe_list_items.append(ListItem(Label(f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars ({recipe_source})"), id=f'menu_recipe_{menu_recipe_idx}'))
             else:
                 menu_recipe_list_items.append(ListItem(Label(f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars"), id=f'menu_recipe_{menu_recipe_idx}'))
+
+        menu_average_stars = menu_total_stars / len(menu_recipes)
 
         yield Header()
         yield Static("View Menu", id="title")
@@ -100,6 +110,8 @@ class ViewMenuScreen(Screen):
         yield self.menu_recipe_list
         self.menu_total_servings_label = Label(f"Total Servings: {menu_total_servings}")
         yield self.menu_total_servings_label
+        self.menu_average_stars_label = Label(f"Stars: {menu_average_stars}")
+        yield self.menu_average_stars_label
         yield Button("Copy to Clipboard", id="copy_to_clipboard")
         yield Button("Generate Grocery List", id="generate_grocery_list")
         yield Button("Edit Menu", id="edit_menu")
@@ -136,6 +148,7 @@ class ViewMenuScreen(Screen):
             menu_text += "\n"
 
             menu_total_servings = 0
+            menu_total_stars = 0
             menu_recipe_list_items = []
             for menu_recipe_idx, menu_recipe in enumerate(menu_recipes):
                 recipe_name = None
@@ -149,8 +162,9 @@ class ViewMenuScreen(Screen):
                         recipe_name = recipe["name"]
                         recipe_servings = int(recipe["servings"])
                         recipe_time = recipe["time"]
-                        recipe_stars = recipe["stars"]
+                        recipe_stars = float(recipe["stars"])
                         menu_total_servings += recipe_servings
+                        menu_total_stars += recipe_stars
                         recipe_source = recipe["source"]
                         break
 
@@ -159,7 +173,10 @@ class ViewMenuScreen(Screen):
                 else:
                     menu_text += f"{recipe_name} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars\n"
 
+            menu_average_stars = menu_total_stars / len(menu_recipes)
+
             menu_text += "\n"
             menu_text += f"Total Servings: {menu_total_servings}\n"
+            menu_text += f"Stars: {menu_average_stars}\n"
 
             pyperclip.copy(menu_text)

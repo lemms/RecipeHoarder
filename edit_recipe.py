@@ -12,6 +12,7 @@ class EditRecipeScreen(Screen):
 
     recipe_ingredients = []
     recipe_amounts = []
+    recipe_optional_flags = []
     recipe_name_input = None
     recipe_servings_input = None
     recipe_time_input = None
@@ -29,6 +30,7 @@ class EditRecipeScreen(Screen):
         self.edit_recipe_id = None
         self.recipe_ingredients = []
         self.recipe_amounts = []
+        self.recipe_optional_flags = []
         self.recipe_name_input.value = ""
         await self.list_view.clear()
         self.recipe_servings_input.value = "1"
@@ -52,7 +54,10 @@ class EditRecipeScreen(Screen):
 
             ingredient_amount = float(self.recipe_amounts[ingredient_idx])
 
-            self.list_view.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})'), id=f'ingredient_{ingredient_idx}'))
+            if self.recipe_optional_flags[ingredient_idx] == True:
+                self.list_view.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure}) (Optional)'), id=f'ingredient_{ingredient_idx}'))
+            else:
+                self.list_view.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})'), id=f'ingredient_{ingredient_idx}'))
 
     def compose(self) -> ComposeResult:
         recipe_name = None
@@ -60,6 +65,7 @@ class EditRecipeScreen(Screen):
         recipe_time = None
         recipe_ingredients = None
         recipe_amounts = None
+        recipe_optional_flags = None
         recipe_instructions = None
         recipe_stars = None
         recipe_tags = None
@@ -72,6 +78,7 @@ class EditRecipeScreen(Screen):
                 recipe_time = recipe["time"]
                 recipe_ingredients = recipe["ingredients"]
                 recipe_amounts = recipe["amounts"]
+                recipe_optional_flags = recipe["optional_flags"]
                 recipe_instructions = recipe["instructions"]
                 recipe_stars = recipe["stars"]
                 recipe_tags = recipe["tags"]
@@ -80,6 +87,7 @@ class EditRecipeScreen(Screen):
 
         self.recipe_ingredients = recipe_ingredients
         self.recipe_amounts = recipe_amounts
+        self.recipe_optional_flags = recipe_optional_flags
 
         ingredient_list_items = []
         for ingredient_idx, recipe_ingredient in enumerate(self.recipe_ingredients):
@@ -93,7 +101,10 @@ class EditRecipeScreen(Screen):
 
             ingredient_amount = float(self.recipe_amounts[ingredient_idx])
 
-            ingredient_list_items.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})'), id=f'ingredient_{ingredient_idx}'))
+            if self.recipe_optional_flags[ingredient_idx] == True:
+                ingredient_list_items.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure}) (Optional)'), id=f'ingredient_{ingredient_idx}'))
+            else:
+                ingredient_list_items.append(ListItem(Label(f'{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})'), id=f'ingredient_{ingredient_idx}'))
 
         yield Header()
         yield Static("Edit Recipe", id="title")
@@ -125,18 +136,19 @@ class EditRecipeScreen(Screen):
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "add_ingredient":
-            async def add_recipe_ingredient(ingredient_tuple) -> None:
+            async def edit_recipe_ingredient_callback(ingredient_tuple) -> None:
                 if ingredient_tuple is not None:
-                    ingredient_id, ingredient_amount = ingredient_tuple
+                    ingredient_id, ingredient_amount, ingredient_optional_flag = ingredient_tuple
 
                     if ingredient_id is not None:
                         self.recipe_ingredients.append(ingredient_id)
                         self.recipe_amounts.append(float(ingredient_amount))
+                        self.recipe_optional_flags.append(ingredient_optional_flag)
 
                     if len(self.recipe_ingredients) > 0:
                         await self.refresh_list_view()
 
-            self.app.push_screen("recipe_ingredient_search", add_recipe_ingredient)
+            self.app.push_screen("recipe_ingredient_search", edit_recipe_ingredient_callback)
         elif event.button.id == "add_recipe":
             recipe_name = self.query_one("#recipe_name").value
             if recipe_name is None or recipe_name == "":
@@ -159,6 +171,7 @@ class EditRecipeScreen(Screen):
                         recipe["stars"] = self.recipe_stars_input.value
                         recipe["tags"] = recipe_tags
                         recipe["source"] = self.recipe_source_input.value
+                        recipe["optional_flags"] = self.recipe_optional_flags
 
                 await self.clear_recipe()
 
@@ -167,5 +180,6 @@ class EditRecipeScreen(Screen):
     async def on_list_view_selected(self, event: ListView.Selected) -> None:
         del self.recipe_ingredients[int(event.item.id[11:])]
         del self.recipe_amounts[int(event.item.id[11:])]
+        del self.recipe_optional_flags[int(event.item.id[11:])]
 
         await self.refresh_list_view()

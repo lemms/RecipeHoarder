@@ -1,6 +1,6 @@
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button
+from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button, Checkbox
 
 import ingredients_util
 import recipes_util
@@ -14,6 +14,7 @@ class RecipeIngredientSearchScreen(Screen):
     ingredient_name_input = None
     list_view = None
     ingredient_amount_input = None
+    ingredient_optional_checkbox = None
 
     async def clear_ingredient_search(self) -> None:
         self.name_matches = []
@@ -21,6 +22,7 @@ class RecipeIngredientSearchScreen(Screen):
         self.ingredient_name_input.value = ""
         await self.list_view.clear()
         self.ingredient_amount_input.value = "0"
+        self.ingredient_optional_checkbox.value = False
 
     async def refresh_list_view(self) -> None:
         await self.list_view.clear()
@@ -48,6 +50,9 @@ class RecipeIngredientSearchScreen(Screen):
         yield Label("Amount")
         self.ingredient_amount_input = Input(placeholder="Ingredient Amount", id="ingredient_amount", type="number", value="0")
         yield self.ingredient_amount_input
+        yield Label("Optional")
+        self.ingredient_optional_checkbox = Checkbox(id="ingredient_optional_checkbox", value=False)
+        yield self.ingredient_optional_checkbox
         yield Button("Add Ingredient", id="add_ingredient")
         yield Footer()
 
@@ -65,7 +70,7 @@ class RecipeIngredientSearchScreen(Screen):
             else:
                 ingredient_id = self.id_matches[self.list_view.index]
                 ingredient_amount = float(self.query_one("#ingredient_amount").value)
+                ingredient_optional_flag = self.ingredient_optional_checkbox.value
 
                 await self.clear_ingredient_search()
-
-                self.dismiss((ingredient_id, ingredient_amount))
+                self.dismiss((ingredient_id, ingredient_amount, ingredient_optional_flag))

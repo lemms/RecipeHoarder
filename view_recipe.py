@@ -32,6 +32,7 @@ class ViewRecipeScreen(Screen):
         recipe_servings = None
         recipe_ingredients = None
         recipe_amounts = None
+        recipe_optional_flags = None
         recipe_tags = None
         recipe_stars = None
         recipe_source = None
@@ -43,6 +44,7 @@ class ViewRecipeScreen(Screen):
                 recipe_servings = recipe["servings"]
                 recipe_ingredients = recipe["ingredients"]
                 recipe_amounts = recipe["amounts"]
+                recipe_optional_flags = recipe["optional_flags"]
                 recipe_tags = recipe["tags"]
                 recipe_stars = recipe["stars"]
                 recipe_source = recipe["source"]
@@ -65,7 +67,10 @@ class ViewRecipeScreen(Screen):
                     ingredient_unit_of_measure = ingredient["unit_of_measure"]
                     break
 
-            self.recipe_ingredients_list_view.append(ListItem(Label(f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})"), id=f'ingredient_{recipe_ingredient_idx}'))
+            if recipe_optional_flags[recipe_ingredient_idx] == True:
+                self.recipe_ingredients_list_view.append(ListItem(Label(f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure}) (Optional)"), id=f'ingredient_{recipe_ingredient_idx}'))
+            else:
+                self.recipe_ingredients_list_view.append(ListItem(Label(f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})"), id=f'ingredient_{recipe_ingredient_idx}'))
 
         self.recipe_instructions_label.update(recipe_instructions)
         self.recipe_tags_label.update(", ".join(recipe_tags))
@@ -79,6 +84,7 @@ class ViewRecipeScreen(Screen):
         recipe_servings = None
         recipe_ingredients = None
         recipe_amounts = None
+        recipe_optional_flags = None
         recipe_tags = None
         recipe_stars = None
         recipe_source = None
@@ -90,6 +96,7 @@ class ViewRecipeScreen(Screen):
                 recipe_servings = recipe["servings"]
                 recipe_ingredients = recipe["ingredients"]
                 recipe_amounts = recipe["amounts"]
+                recipe_optional_flags = recipe["optional_flags"]
                 recipe_tags = recipe["tags"]
                 recipe_stars = recipe["stars"]
                 recipe_source = recipe["source"]
@@ -108,7 +115,10 @@ class ViewRecipeScreen(Screen):
                     ingredient_unit_of_measure = ingredient["unit_of_measure"]
                     break
 
-            recipe_ingredients_list_items.append(ListItem(Label(f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})"), id=f'ingredient_{recipe_ingredient_idx}'))
+            if recipe_optional_flags[recipe_ingredient_idx] == True:
+                recipe_ingredients_list_items.append(ListItem(Label(f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure}) (Optional)"), id=f'ingredient_{recipe_ingredient_idx}'))
+            else:
+                recipe_ingredients_list_items.append(ListItem(Label(f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})"), id=f'ingredient_{recipe_ingredient_idx}'))
 
         yield Header()
         yield Static("View Recipe", id="title")
@@ -159,6 +169,7 @@ class ViewRecipeScreen(Screen):
             recipe_servings = None
             recipe_ingredients = None
             recipe_amounts = None
+            recipe_optional_flags = None
             recipe_tags = None
             recipe_stars = None
             recipe_source = None
@@ -170,6 +181,7 @@ class ViewRecipeScreen(Screen):
                     recipe_servings = recipe["servings"]
                     recipe_ingredients = recipe["ingredients"]
                     recipe_amounts = recipe["amounts"]
+                    recipe_optional_flags = recipe["optional_flags"]
                     recipe_tags = recipe["tags"]
                     recipe_stars = recipe["stars"]
                     recipe_source = recipe["source"]
@@ -196,7 +208,10 @@ class ViewRecipeScreen(Screen):
                         ingredient_unit_of_measure = ingredient["unit_of_measure"]
                         break
 
-                recipe_text += f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})\n"
+                if recipe_optional_flags[recipe_ingredient_idx] == True:
+                    recipe_text += f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure}) (Optional)\n"
+                else:
+                    recipe_text += f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})\n"
 
             recipe_text += "\n"
             recipe_text += "Instructions:\n"

@@ -4,6 +4,7 @@ from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, I
 
 import ingredients_util
 import recipes_util
+import util
 
 class AddRecipeScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
@@ -121,6 +122,8 @@ class AddRecipeScreen(Screen):
                           "optional_flags": self.recipe_optional_flags}
 
                 recipes_util.recipes.append(recipe)
+
+                util.save_data()
 
                 await self.clear_recipe()
                 self.app.pop_screen()

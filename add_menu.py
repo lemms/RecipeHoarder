@@ -2,8 +2,9 @@ from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button
 
-import recipes_util
 import menus_util
+import recipes_util
+import util
 
 class AddMenuScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
@@ -92,6 +93,8 @@ class AddMenuScreen(Screen):
                               "name": menu_name,
                               "deleted": False,
                               "recipes": self.menu_recipes})
+
+                util.save_data()
 
                 await self.clear_menu_form()
                 self.app.pop_screen()

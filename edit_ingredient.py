@@ -1,11 +1,9 @@
-from textual import on
 from textual.app import ComposeResult
-from textual.events import ScreenResume
 from textual.screen import Screen
-from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button
-from textual.containers import HorizontalGroup
+from textual.widgets import Header, Footer, Static, Label, Input, Button
 
 import ingredients_util
+import util
 
 class EditIngredientScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
@@ -65,6 +63,8 @@ class EditIngredientScreen(Screen):
                     ingredient["deleted"] = False
                     ingredient["category"] = category
                     break
+
+            util.save_data()
 
             self.clear_ingredient_form()
 

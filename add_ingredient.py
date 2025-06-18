@@ -3,6 +3,7 @@ from textual.screen import Screen
 from textual.widgets import Header, Footer, Static, Label, Input, Button
 
 import ingredients_util
+import util
 
 class AddIngredientScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
@@ -37,6 +38,7 @@ class AddIngredientScreen(Screen):
             max_id = ingredients_util.find_max_ingredient_id()
 
             ingredients_util.ingredients.append({"id": max_id + 1, "name": self.query_one("#ingredient_name").value, "unit_of_measure": unit_of_measure, "deleted": False, "category": category})
+            util.save_data()
 
             self.clear_ingredient_form()
 

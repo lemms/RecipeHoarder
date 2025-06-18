@@ -2,6 +2,7 @@ from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button
 
+import menus_util
 import recipes_util
 
 class MenuRecipeSearchScreen(Screen):
@@ -53,7 +54,7 @@ class MenuRecipeSearchScreen(Screen):
             self.name_matches = []
             self.id_matches = []
 
-            self.name_matches, self.id_matches = recipes_util.search_recipe(self.query_one("#recipe_name").value)
+            self.name_matches, self.id_matches = menus_util.search_recipe(self.query_one("#recipe_name").value)
 
             await self.refresh_list_view()
         elif event.button.id == "add_recipe":

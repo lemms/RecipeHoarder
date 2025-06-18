@@ -3,6 +3,7 @@ from textual.screen import Screen
 from textual.widgets import Header, Footer, Static, Label, ListView, ListItem, Input, Button
 
 import ingredients_util
+import recipes_util
 
 class RecipeIngredientSearchScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
@@ -55,7 +56,7 @@ class RecipeIngredientSearchScreen(Screen):
             self.name_matches = []
             self.id_matches = []
 
-            self.name_matches, self.id_matches = ingredients_util.search_ingredient(self.query_one("#ingredient_name").value)
+            self.name_matches, self.id_matches = recipes_util.search_ingredient(self.query_one("#ingredient_name").value)
 
             await self.refresh_list_view()
         elif event.button.id == "add_ingredient":

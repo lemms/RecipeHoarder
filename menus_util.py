@@ -14,14 +14,16 @@ def find_max_menu_id() -> int:
     return max_id
 
 def search_recipe(recipe_name: str, match_limit: int = 50) -> list:
-    recipe_names = [recipe["name"] for recipe in recipes_util.recipes]
+    recipe_names = [f'{recipe["name"]} {recipe["source"]} {recipe["tags"]}' for recipe in recipes_util.recipes]
     string_matches = process.extract(recipe_name, recipe_names, limit=match_limit)
 
-    name_matches = [string_match[0] for string_match in string_matches]
+    search_matches = [string_match[0] for string_match in string_matches]
+    name_matches = []
     id_matches = []
-    for name_match in name_matches:
+    for search_match in search_matches:
         for recipe in recipes_util.recipes:
-            if recipe["name"] == name_match:
+            if recipe["name"] == search_match[:len(recipe["name"])]:
+                name_matches.append(recipe["name"])
                 id_matches.append(recipe["id"])
                 break
 

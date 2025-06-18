@@ -568,19 +568,37 @@ class ListMenusScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]
 
     list_view = None
+    menu_data = []
 
     async def refresh_list_view(self) -> None:
         await self.list_view.clear()
 
+        self.menu_data = []
+
         for menu_idx, menu in enumerate(menus):
             if not menu["deleted"]:
-                self.list_view.append(ListItem(Label(menu["name"]), id=f'menu_{menu_idx}'))
+                self.menu_data.append({"index": menu_idx,
+                                       "name": menu["name"]})
+
+        self.menu_data.sort(key=lambda x: x["name"])
+
+        list_items = []
+        for menu_datum_idx, menu_datum in enumerate(self.menu_data):
+            self.list_view.append(ListItem(Label(f'{menu_datum["name"]}'), id=f'menu_{menu_datum_idx}'))
 
     def compose(self) -> ComposeResult:
-        list_items = []
+        self.menu_data = []
+
         for menu_idx, menu in enumerate(menus):
             if not menu["deleted"]:
-                list_items.append(ListItem(Label(menu["name"]), id=f'menu_{menu_idx}'))
+                self.menu_data.append({"index": menu_idx,
+                                       "name": menu["name"]})
+
+        self.menu_data.sort(key=lambda x: x["name"])
+
+        list_items = []
+        for menu_datum_idx, menu_datum in enumerate(self.menu_data):
+            list_items.append(ListItem(Label(f'{menu_datum["name"]}'), id=f'menu_{menu_datum_idx}'))
 
         yield Header()
         yield Static("List Menus", id="title")
@@ -589,7 +607,8 @@ class ListMenusScreen(Screen):
         yield Footer()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
-        menu_idx = int(event.item.id[5:])
+        menu_data_idx = int(event.item.id[5:])
+        menu_idx = self.menu_data[menu_data_idx]["index"]
         menu_id = menus[menu_idx]["id"]
 
         self.app.push_screen(ViewMenuScreen(menu_id))

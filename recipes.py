@@ -564,11 +564,6 @@ class ListRecipesScreen(Screen):
             self.list_view.append(ListItem(Label(f'{recipe_datum["name"]} ({recipe_datum["servings"]} servings) ({recipe_datum["time"]}) {recipe_datum["stars"]} stars'), id=f'recipe_{recipe_datum_idx}'))
 
     def compose(self) -> ComposeResult:
-        list_items = []
-        for recipe_idx, recipe in enumerate(recipes):
-            if not recipe["deleted"]:
-                list_items.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]}) {recipe["stars"]} stars'), id=f'recipe_{recipe_idx}'))
-
         self.recipe_data = []
 
         for recipe_idx, recipe in enumerate(recipes):

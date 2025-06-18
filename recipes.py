@@ -1,5 +1,7 @@
 from fuzzywuzzy import process
 
+import pyperclip
+
 from textual import on
 from textual.app import ComposeResult
 from textual.events import ScreenResume
@@ -511,6 +513,7 @@ class ViewRecipeScreen(Screen):
         yield self.recipe_stars_label
         self.recipe_source_label = Label(f'Source: {recipe_source}')
         yield self.recipe_source_label
+        yield Button("Copy to Clipboard", id="copy_to_clipboard")
         yield Button("Edit Recipe", id="edit_recipe")
         yield Button("Delete Recipe", id="delete_recipe")
         yield Footer()
@@ -531,6 +534,65 @@ class ViewRecipeScreen(Screen):
                 await recipe_screen.refresh_recipe_form()
 
             self.app.push_screen(EditRecipeScreen(self.view_recipe_id), edit_recipe)
+        elif event.button.id == "copy_to_clipboard":
+            recipe_name = None
+            recipe_instructions = None
+            recipe_time = None
+            recipe_servings = None
+            recipe_ingredients = None
+            recipe_amounts = None
+            recipe_tags = None
+            recipe_stars = None
+            recipe_source = None
+            for recipe in recipes:
+                if int(recipe["id"]) == int(self.view_recipe_id):
+                    recipe_name = recipe["name"]
+                    recipe_instructions = recipe["instructions"]
+                    recipe_time = recipe["time"]
+                    recipe_servings = recipe["servings"]
+                    recipe_ingredients = recipe["ingredients"]
+                    recipe_amounts = recipe["amounts"]
+                    recipe_tags = recipe["tags"]
+                    recipe_stars = recipe["stars"]
+                    recipe_source = recipe["source"]
+                    break
+
+            recipe_text = f"Recipe: {recipe_name}\n"
+            recipe_text += "\n"
+            recipe_text += f"Time: {recipe_time}\n"
+            recipe_text += f"Servings: {recipe_servings}\n"
+            recipe_text += "\n"
+            recipe_text += "Ingredients:\n"
+            recipe_text += "-----------\n"
+
+            recipe_ingredients_list_items = []
+
+            for recipe_ingredient_idx, recipe_ingredient in enumerate(recipe_ingredients):
+                ingredient_name = None
+                ingredient_unit_of_measure = None
+                ingredient_amount = float(recipe_amounts[recipe_ingredient_idx])
+
+                for ingredient in ingredients.ingredients:
+                    if int(ingredient["id"]) == int(recipe_ingredient):
+                        ingredient_name = ingredient["name"]
+                        ingredient_unit_of_measure = ingredient["unit_of_measure"]
+                        break
+
+                recipe_text += f"{ingredient_name} ({ingredient_amount} {ingredient_unit_of_measure})\n"
+
+            recipe_text += "\n"
+            recipe_text += "Instructions:\n"
+            recipe_text += "------------\n"
+            recipe_text += f"{recipe_instructions}\n"
+            recipe_text += "\n"
+            recipe_text += "Tags:\n"
+            recipe_text += "----\n"
+            recipe_text += ", ".join(recipe_tags)
+            recipe_text += "\n\n"
+            recipe_text += f"Star Rating: {recipe_stars}\n"
+            recipe_text += f"Source: {recipe_source}\n"
+
+            pyperclip.copy(recipe_text)
 
 class ListRecipesScreen(Screen):
     BINDINGS = [("escape", "app.pop_screen", "Pop screen")]

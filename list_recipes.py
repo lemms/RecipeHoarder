@@ -16,11 +16,6 @@ class ListRecipesScreen(Screen):
     async def refresh_list_view(self) -> None:
         await self.list_view.clear()
 
-        list_items = []
-        for recipe_idx, recipe in enumerate(recipes_util.recipes):
-            if not recipe["deleted"]:
-                list_items.append(ListItem(Label(f'{recipe["name"]} ({recipe["servings"]} servings) ({recipe["time"]}) {recipe["stars"]} stars'), id=f'recipe_{recipe_idx}'))
-
         self.recipe_data = []
 
         for recipe_idx, recipe in enumerate(recipes_util.recipes):
@@ -36,7 +31,10 @@ class ListRecipesScreen(Screen):
 
         list_items = []
         for recipe_datum_idx, recipe_datum in enumerate(self.recipe_data):
-            self.list_view.append(ListItem(Label(f'{recipe_datum["name"]} ({recipe_datum["servings"]} servings) ({recipe_datum["time"]}) {recipe_datum["stars"]} stars'), id=f'recipe_{recipe_datum_idx}'))
+            if recipe_datum["source"] != "":
+                self.list_view.append(ListItem(Label(f'{recipe_datum["name"]} ({recipe_datum["servings"]} servings) ({recipe_datum["time"]}) {recipe_datum["stars"]} stars ({recipe_datum["source"]})'), id=f'recipe_{recipe_datum_idx}'))
+            else:
+                self.list_view.append(ListItem(Label(f'{recipe_datum["name"]} ({recipe_datum["servings"]} servings) ({recipe_datum["time"]}) {recipe_datum["stars"]} stars'), id=f'recipe_{recipe_datum_idx}'))
 
     def compose(self) -> ComposeResult:
         self.recipe_data = []
@@ -54,7 +52,10 @@ class ListRecipesScreen(Screen):
 
         list_items = []
         for recipe_datum_idx, recipe_datum in enumerate(self.recipe_data):
-            list_items.append(ListItem(Label(f'{recipe_datum["name"]} ({recipe_datum["servings"]} servings) ({recipe_datum["time"]}) {recipe_datum["stars"]} stars'), id=f'recipe_{recipe_datum_idx}'))
+            if recipe_datum["source"] != "":
+                list_items.append(ListItem(Label(f'{recipe_datum["name"]} ({recipe_datum["servings"]} servings) ({recipe_datum["time"]}) {recipe_datum["stars"]} stars ({recipe_datum["source"]})'), id=f'recipe_{recipe_datum_idx}'))
+            else:
+                list_items.append(ListItem(Label(f'{recipe_datum["name"]} ({recipe_datum["servings"]} servings) ({recipe_datum["time"]}) {recipe_datum["stars"]} stars'), id=f'recipe_{recipe_datum_idx}'))
 
         yield Header()
         yield Static("List Recipes", id="title")

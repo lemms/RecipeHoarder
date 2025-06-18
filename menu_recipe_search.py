@@ -27,15 +27,20 @@ class MenuRecipeSearchScreen(Screen):
             recipe_time = None
             recipe_servings = None
             recipe_stars = None
+            recipe_source = None
 
             for recipe in recipes_util.recipes:
                 if int(recipe["id"]) == int(self.id_matches[name_match_idx]):
                     recipe_time = recipe["time"]
                     recipe_servings = recipe["servings"]
                     recipe_stars = recipe["stars"]
+                    recipe_source = recipe["source"]
                     break
 
-            self.list_view.append(ListItem(Label(f'{name_match} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars'), id=f'search_recipe_{name_match_idx}'))
+            if recipe_source is not None and recipe_source != "":
+                self.list_view.append(ListItem(Label(f'{name_match} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars ({recipe_source})'), id=f'search_recipe_{name_match_idx}'))
+            else:
+                self.list_view.append(ListItem(Label(f'{name_match} ({recipe_servings} servings) ({recipe_time}) {recipe_stars} stars'), id=f'search_recipe_{name_match_idx}'))
 
     def compose(self) -> ComposeResult:
         yield Header()

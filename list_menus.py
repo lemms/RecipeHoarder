@@ -41,7 +41,7 @@ class ListMenusScreen(Screen):
 
             menu_average_stars = menu_total_stars / len(menu_datum["recipes"])
 
-            self.list_view.append(ListItem(Label(f'{menu_datum["name"]} ({menu_servings} servings) ({menu_average_stars} stars)'), id=f'menu_{menu_datum_idx}'))
+            self.list_view.append(ListItem(Label(f'{menu_datum["name"]} ({menu_servings} servings) ({menu_average_stars:2.1f} stars)'), id=f'menu_{menu_datum_idx}'))
 
     def compose(self) -> ComposeResult:
         self.menu_data = []
@@ -68,7 +68,7 @@ class ListMenusScreen(Screen):
 
             menu_average_stars = menu_total_stars / len(menu_datum["recipes"])
 
-            list_items.append(ListItem(Label(f'{menu_datum["name"]} ({menu_servings} servings) ({menu_average_stars} stars)'), id=f'menu_{menu_datum_idx}'))
+            list_items.append(ListItem(Label(f'{menu_datum["name"]} ({menu_servings} servings) ({menu_average_stars:2.1f} stars)'), id=f'menu_{menu_datum_idx}'))
 
         yield Header()
         yield Static("List Menus", id="title")

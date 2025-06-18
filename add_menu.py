@@ -50,7 +50,7 @@ class AddMenuScreen(Screen):
 
         self.menu_total_servings_label.update(f"Total Servings: {self.menu_servings}")
         self.menu_total_servings_label.refresh()
-        self.menu_average_stars_label.update(f"Stars: {menu_average_stars}")
+        self.menu_average_stars_label.update(f"Stars: {menu_average_stars:2.1f}")
         self.menu_average_stars_label.refresh()
 
     def compose(self) -> ComposeResult:

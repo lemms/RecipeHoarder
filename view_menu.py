@@ -62,7 +62,7 @@ class ViewMenuScreen(Screen):
         menu_average_stars = menu_total_stars / len(menu_recipes)
 
         self.menu_total_servings_label.update(f"Total Servings: {menu_total_servings}")
-        self.menu_average_stars_label.update(f"Stars: {menu_average_stars}")
+        self.menu_average_stars_label.update(f"Stars: {menu_average_stars:2.1f}")
 
     def compose(self) -> ComposeResult:
         menu_name = None
@@ -110,7 +110,7 @@ class ViewMenuScreen(Screen):
         yield self.menu_recipe_list
         self.menu_total_servings_label = Label(f"Total Servings: {menu_total_servings}")
         yield self.menu_total_servings_label
-        self.menu_average_stars_label = Label(f"Stars: {menu_average_stars}")
+        self.menu_average_stars_label = Label(f"Stars: {menu_average_stars:2.1f}")
         yield self.menu_average_stars_label
         yield Button("Copy to Clipboard", id="copy_to_clipboard")
         yield Button("Generate Grocery List", id="generate_grocery_list")
@@ -177,6 +177,6 @@ class ViewMenuScreen(Screen):
 
             menu_text += "\n"
             menu_text += f"Total Servings: {menu_total_servings}\n"
-            menu_text += f"Stars: {menu_average_stars}\n"
+            menu_text += f"Stars: {menu_average_stars:2.1f}\n"
 
             pyperclip.copy(menu_text)

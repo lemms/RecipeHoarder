@@ -58,7 +58,7 @@ class EditMenuScreen(Screen):
 
         self.menu_total_servings_label.update(f"Total Servings: {self.menu_servings}")
         self.menu_total_servings_label.refresh()
-        self.menu_average_stars_label.update(f"Stars: {menu_average_stars}")
+        self.menu_average_stars_label.update(f"Stars: {menu_average_stars:2.1f}")
         self.menu_average_stars_label.refresh()
 
     def compose(self) -> ComposeResult:
@@ -103,7 +103,7 @@ class EditMenuScreen(Screen):
         yield self.menu_recipe_list
         self.menu_total_servings_label = Label(f"Total Servings: {self.menu_servings}")
         yield self.menu_total_servings_label
-        self.menu_average_stars_label = Label(f"Stars: {menu_average_stars}")
+        self.menu_average_stars_label = Label(f"Stars: {menu_average_stars:2.1f}")
         yield self.menu_average_stars_label
         yield Button("Submit", id="edit_menu")
         yield Footer()

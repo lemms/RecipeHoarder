@@ -45,7 +45,7 @@ class MenuRecipeSearchScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static("Recipe Search", id="title")
-        self.recipe_name_input = Input(placeholder="Recipe Name", id="recipe_name", type="text")
+        self.recipe_name_input = Input(placeholder="Recipe Name, Source, Tags, or Ingredients", id="recipe_name", type="text")
         yield self.recipe_name_input
         yield Button("Search", id="search_recipe")
         yield Label("Select Recipe")

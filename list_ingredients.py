@@ -28,7 +28,7 @@ class ListIngredientsScreen(Screen):
         self.ingredient_data.sort(key=lambda x: x["name"])
 
         for ingredient_datum_idx, ingredient_datum in enumerate(self.ingredient_data):
-            self.list_view.append(ListItem(Label(f'{ingredient_datum["name"]} ({ingredient_datum["unit_of_measure"]}) ({ingredient_datum["category"]})'), id=f'ingredient_{ingredient_datum_idx}'))
+            self.list_view.append(ListItem(Label(f'{ingredient_datum["name"]} ({ingredient_datum["unit_of_measure"].replace("_", " ")}) ({ingredient_datum["category"]})'), id=f'ingredient_{ingredient_datum_idx}'))
 
     def compose(self) -> ComposeResult:
         self.ingredient_data = []
@@ -44,7 +44,7 @@ class ListIngredientsScreen(Screen):
 
         list_items = []
         for ingredient_datum_idx, ingredient_datum in enumerate(self.ingredient_data):
-            list_items.append(ListItem(Label(f'{ingredient_datum["name"]} ({ingredient_datum["unit_of_measure"]}) ({ingredient_datum["category"]})'), id=f'ingredient_{ingredient_datum_idx}'))
+            list_items.append(ListItem(Label(f'{ingredient_datum["name"]} ({ingredient_datum["unit_of_measure"].replace("_", " ")}) ({ingredient_datum["category"]})'), id=f'ingredient_{ingredient_datum_idx}'))
 
         yield Header()
         yield Static("List Ingredients", id="title")

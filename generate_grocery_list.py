@@ -32,7 +32,24 @@ class GenerateGroceryListScreen(Screen):
         self.grocery_list_menu_id = grocery_list_menu_id
         super().__init__()
 
+    def clear_grocery_list(self) -> None:
+        self.grocery_list_ingredients = []
+        self.grocery_list_amounts = []
+        self.grocery_list_ingredient_names = []
+        self.grocery_list_ingredient_units_of_measure = []
+        self.grocery_list_ingredient_categories = []
+        self.produce_ingredients = []
+        self.dairy_ingredients = []
+        self.meat_ingredients = []
+        self.seafood_ingredients = []
+        self.bakery_ingredients = []
+        self.frozen_ingredients = []
+        self.pantry_ingredients = []
+        self.other_ingredients = []
+
     def compose(self) -> ComposeResult:
+        self.clear_grocery_list()
+
         menu_recipes = []
         for menu in menus_util.menus:
             if int(menu["id"]) == int(self.grocery_list_menu_id):

@@ -92,7 +92,10 @@ class EditMenuScreen(Screen):
 
                     menu_recipe_list_items.append(ListItem(Label(f'{menu_recipe_name} ({menu_recipe_servings} servings) ({menu_recipe_time}) {menu_recipe_stars} stars'), id=f'menu_recipe_{menu_recipe_idx}'))
 
-        menu_average_stars = self.menu_total_stars / len(self.menu_recipes)
+        if len(self.menu_recipes) == 0:
+            menu_average_stars = 0
+        else:
+            menu_average_stars = self.menu_total_stars / len(self.menu_recipes)
 
         yield Header()
         yield Static("Add Menu", id="title")

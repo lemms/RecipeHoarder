@@ -29,7 +29,7 @@ class AddRecipeScreen(Screen):
         await self.list_view.clear()
         self.recipe_servings_input.value = "1"
         self.recipe_time_input.value = ""
-        self.recipe_stars_input.value = "5"
+        self.recipe_stars_input.value = "0"
         self.recipe_instructions_text_area.text = ""
         self.recipe_tags_text_area.text = ""
         self.recipe_source_input.value = ""
@@ -71,7 +71,7 @@ class AddRecipeScreen(Screen):
         self.recipe_instructions_text_area = TextArea(id="recipe_instructions")
         yield self.recipe_instructions_text_area
         yield Label("Star Rating")
-        self.recipe_stars_input = Input(placeholder="Star Rating", id="recipe_stars", type="number", value="5")
+        self.recipe_stars_input = Input(placeholder="Star Rating", id="recipe_stars", type="number", value="0")
         yield self.recipe_stars_input
         yield Label("Tags")
         self.recipe_tags_text_area = TextArea(id="recipe_tags")

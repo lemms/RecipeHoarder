@@ -26,6 +26,8 @@ class GenerateGroceryListScreen(Screen):
     bakery_ingredients = []
     frozen_ingredients = []
     pantry_ingredients = []
+    refrigerated_ingredients = []
+    staple_ingredients = []
     other_ingredients = []
 
     def __init__(self, grocery_list_menu_id: int) -> None:
@@ -45,6 +47,8 @@ class GenerateGroceryListScreen(Screen):
         self.bakery_ingredients = []
         self.frozen_ingredients = []
         self.pantry_ingredients = []
+        self.refrigerated_ingredients = []
+        self.staple_ingredients = []
         self.other_ingredients = []
 
     def compose(self) -> ComposeResult:
@@ -98,6 +102,10 @@ class GenerateGroceryListScreen(Screen):
                 self.frozen_ingredients.append(grocery_list_ingredient_idx)
             elif ingredient_category == "pantry":
                 self.pantry_ingredients.append(grocery_list_ingredient_idx)
+            elif ingredient_category == "refrigerated":
+                self.refrigerated_ingredients.append(grocery_list_ingredient_idx)
+            elif ingredient_category == "staple":
+                self.staple_ingredients.append(grocery_list_ingredient_idx)
             elif ingredient_category == "other":
                 self.other_ingredients.append(grocery_list_ingredient_idx)
             else:
@@ -162,6 +170,22 @@ class GenerateGroceryListScreen(Screen):
                 pantry_ingredient_amount = self.grocery_list_amounts[pantry_ingredient]
                 pantry_ingredient_unit_of_measure = self.grocery_list_ingredient_units_of_measure[pantry_ingredient]
                 yield Label(f"{pantry_ingredient_name} ({pantry_ingredient_amount} {pantry_ingredient_unit_of_measure})")
+
+        if len(self.refrigerated_ingredients) > 0:
+            yield Label("Refrigerated")
+            for refrigerated_ingredient_idx, refrigerated_ingredient in enumerate(self.refrigerated_ingredients):
+                refrigerated_ingredient_name = self.grocery_list_ingredient_names[refrigerated_ingredient]
+                refrigerated_ingredient_amount = self.grocery_list_amounts[refrigerated_ingredient]
+                refrigerated_ingredient_unit_of_measure = self.grocery_list_ingredient_units_of_measure[refrigerated_ingredient]
+                yield Label(f"{refrigerated_ingredient_name} ({refrigerated_ingredient_amount} {refrigerated_ingredient_unit_of_measure})")
+
+        if len(self.staple_ingredients) > 0:
+            yield Label("Staple")
+            for staple_ingredient_idx, staple_ingredient in enumerate(self.staple_ingredients):
+                staple_ingredient_name = self.grocery_list_ingredient_names[staple_ingredient]
+                staple_ingredient_amount = self.grocery_list_amounts[staple_ingredient]
+                staple_ingredient_unit_of_measure = self.grocery_list_ingredient_units_of_measure[staple_ingredient]
+                yield Label(f"{staple_ingredient_name} ({staple_ingredient_amount} {staple_ingredient_unit_of_measure})")
 
         if len(self.other_ingredients) > 0:
             yield Label("Other")
@@ -249,6 +273,26 @@ class GenerateGroceryListScreen(Screen):
                     pantry_ingredient_amount = self.grocery_list_amounts[pantry_ingredient]
                     pantry_ingredient_unit_of_measure = self.grocery_list_ingredient_units_of_measure[pantry_ingredient]
                     grocery_list_text += f"{pantry_ingredient_name} ({pantry_ingredient_amount} {pantry_ingredient_unit_of_measure})\n"
+                grocery_list_text += "\n"
+
+            if len(self.refrigerated_ingredients) > 0:
+                grocery_list_text += "Refrigerated\n"
+                grocery_list_text += "------\n"
+                for refrigerated_ingredient_idx, refrigerated_ingredient in enumerate(self.refrigerated_ingredients):
+                    refrigerated_ingredient_name = self.grocery_list_ingredient_names[refrigerated_ingredient]
+                    refrigerated_ingredient_amount = self.grocery_list_amounts[refrigerated_ingredient]
+                    refrigerated_ingredient_unit_of_measure = self.grocery_list_ingredient_units_of_measure[refrigerated_ingredient]
+                    grocery_list_text += f"{refrigerated_ingredient_name} ({refrigerated_ingredient_amount} {refrigerated_ingredient_unit_of_measure})\n"
+                grocery_list_text += "\n"
+
+            if len(self.staple_ingredients) > 0:
+                grocery_list_text += "Staple\n"
+                grocery_list_text += "------\n"
+                for staple_ingredient_idx, staple_ingredient in enumerate(self.staple_ingredients):
+                    staple_ingredient_name = self.grocery_list_ingredient_names[staple_ingredient]
+                    staple_ingredient_amount = self.grocery_list_amounts[staple_ingredient]
+                    staple_ingredient_unit_of_measure = self.grocery_list_ingredient_units_of_measure[staple_ingredient]
+                    grocery_list_text += f"{staple_ingredient_name} ({staple_ingredient_amount} {staple_ingredient_unit_of_measure})\n"
                 grocery_list_text += "\n"
 
             if len(self.other_ingredients) > 0:

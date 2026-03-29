@@ -59,6 +59,8 @@ categories = ["Produce",
               "Bakery",
               "Frozen",
               "Pantry",
+              "Refrigerated",
+              "Staple",
               "Other"]
 
 categories_lower = [category.lower() for category in categories]
